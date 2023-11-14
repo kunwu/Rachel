@@ -1,17 +1,30 @@
 <template>
     <div>
-        <div class="m-1"><button @click="calculate" class="btn btn-primary">生成</button></div>
-        <transition name="fade" mode="out-in">
-            <p class="number-list" v-if="outputList.length > 0" :key="numberListKey">{{ outputList.join(' + ') }}</p>
-        </transition>
-        <div class="m-1"><button @click="showAnswer" class="btn btn-info">答案</button></div>
-        <p class="actual-sum" v-if="showSum">= {{ actualSum }}</p>
+        <div class="m-3">
+            <transition name="fade" mode="out-in">
+                <p class="number-list" v-if="outputList.length > 0" :key="numberListKey">{{ outputList.join(' + ') }}</p>
+            </transition>
+            <p class="actual-sum">= {{ actualSum }}</p>
+        </div>
+        <div class="row m-1">
+            <button @click="calculate" class="btn btn-primary col-3">出题</button>
+            <button @click="showAnswer" class="btn btn-info col-2 ml-2">答案</button>
+        </div>
+        <hr />
+        <div class="row m-1">
+            <button @click="isCorrect" type="button" class="btn btn-success col-4">做对啦：{{ countCorrect
+            }}</button>
+            <button @click="isInCorrect" type="button" class="btn btn-danger col-4 ml-1">失误了：{{ countIncorrect
+            }}</button>
+            <button @click="resetScore" type="button" class="btn btn-info col-2 ml-3">重来</button>
+        </div>
+        <hr />
         <div class="m-1"><b-button v-b-toggle.controlBox variant="primary">配置</b-button></div>
         <b-collapse id="controlBox" class="mt-2">
             <div class="card">
                 <div class="card-body">
                     <div class="form-group">
-                        <label>和: </label>
+                        <label>总和: </label>
                         <input v-model.number="sum" type="number" class="form-control">
                     </div>
                     <div class="form-group">
@@ -23,7 +36,7 @@
                         <input v-model.number="integersCount" type="number" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>和扰动: </label>
+                        <label>对和扰动: </label>
                         <!-- 和是否扰动，默认 true -->
                         <b-form-checkbox v-model="sumHasRandom">和扰动</b-form-checkbox>
                     </div>
@@ -88,10 +101,13 @@ export default {
             digitsNumber: 3,
             integersCount: 4,
             sumHasRandom: true,
-            actualSum: 1000,
+            actualSumHide: 1000,
+            actualSum: "?",
             outputList: [],
             showSum: false,
             numberListKey: 0,
+            countCorrect: 0,
+            countIncorrect: 0,
         }
     },
     methods: {
@@ -99,13 +115,27 @@ export default {
             // Assuming generateNumbers is a globally accessible function
             let result = generateNumbers(this.sum, this.digitsNumber, this.integersCount, this.sumHasRandom);
             this.outputList = result.numbers;
-            this.actualSum = result.actualSum;
+            this.actualSumHide = result.actualSum;
+            this.actualSum = "?";
             this.showSum = false;
             this.numberListKey = this.numberListKey + 1;
         },
         showAnswer() {
-            this.showSum = !this.showSum;
-        }
+            this.actualSum = this.actualSumHide;
+        },
+        isCorrect() {
+            this.countCorrect++;
+        },
+        isInCorrect() {
+            this.countIncorrect++;
+        },
+        resetScore() {
+            this.countCorrect = 0;
+            this.countIncorrect = 0;
+        },
+    },
+    mounted() {
+        this.calculate();
     },
 }
 </script>
