@@ -1,10 +1,12 @@
 <template>
     <div>
-        <button @click="calculate" class="btn btn-primary">生成</button>
-        <button @click="showAnswer" class="btn btn-info">答案</button>
-        <p class="number-list" v-if="outputList.length > 0">{{ outputList.join(' + ') }}</p>
+        <div class="m-1"><button @click="calculate" class="btn btn-primary">生成</button></div>
+        <transition name="fade" mode="out-in">
+            <p class="number-list" v-if="outputList.length > 0" :key="numberListKey">{{ outputList.join(' + ') }}</p>
+        </transition>
+        <div class="m-1"><button @click="showAnswer" class="btn btn-info">答案</button></div>
         <p class="actual-sum" v-if="showSum">= {{ actualSum }}</p>
-        <b-button v-b-toggle.controlBox variant="primary">配置</b-button>
+        <div class="m-1"><b-button v-b-toggle.controlBox variant="primary">配置</b-button></div>
         <b-collapse id="controlBox" class="mt-2">
             <div class="card">
                 <div class="card-body">
@@ -89,6 +91,7 @@ export default {
             actualSum: 1000,
             outputList: [],
             showSum: false,
+            numberListKey: 0,
         }
     },
     methods: {
@@ -98,9 +101,10 @@ export default {
             this.outputList = result.numbers;
             this.actualSum = result.actualSum;
             this.showSum = false;
+            this.numberListKey = this.numberListKey + 1;
         },
         showAnswer() {
-            this.showSum = true;
+            this.showSum = !this.showSum;
         }
     },
 }
@@ -118,6 +122,19 @@ export default {
     .actual-sum {
         font-size: 30px;
     }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active below version 2.1.8 */
+    {
+    opacity: 0;
 }
 </style>
   
