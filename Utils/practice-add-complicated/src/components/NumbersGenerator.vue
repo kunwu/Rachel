@@ -1,14 +1,38 @@
 <template>
     <div>
-        <label>和: <input v-model.number="sum" type="number"></label>
-        <label>几位数: <input v-model.number="digitsNumber" type="number"></label>
-        <label>几个数: <input v-model.number="integersCount" type="number"></label>
-        <button @click="calculate">生成</button>
-        <ul>
-            <li v-for="(number, index) in outputList" :key="index">{{ number }}</li>
-        </ul>
+        <button @click="calculate" class="btn btn-primary">生成</button>
+        <button @click="showAnswer" class="btn btn-info">答案</button>
+        <p class="number-list" v-if="outputList.length > 0">{{ outputList.join(' + ') }}</p>
+        <p class="actual-sum" v-if="showSum">= {{ actualSum }}</p>
+        <b-button v-b-toggle.controlBox variant="primary">配置</b-button>
+        <b-collapse id="controlBox" class="mt-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>和: </label>
+                        <input v-model.number="sum" type="number" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>几位数: </label>
+                        <input v-model.number="digitsNumber" type="number" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>几个数: </label>
+                        <input v-model.number="integersCount" type="number" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>和扰动: </label>
+                        <!-- 和是否扰动，默认 true -->
+                        <b-form-checkbox v-model="sumHasRandom">和扰动</b-form-checkbox>
+                    </div>
+                </div>
+            </div>
+        </b-collapse>
     </div>
 </template>
+  
+
+ 
   
 <script>
 function getRandomIntWithDigits(d) {
@@ -17,7 +41,11 @@ function getRandomIntWithDigits(d) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function generateNumbers(sum, digitsNumber, integersCount) {
+function generateNumbers(sum, digitsNumber, integersCount, sumHasRandom) {
+    if (sumHasRandom) {
+        sum = sum + Math.floor(Math.random() * 20 - 10);
+    }
+
     if (sum < Math.pow(10, digitsNumber - 1) * integersCount || sum > Math.pow(10, digitsNumber) * integersCount) {
         return [];
     }
@@ -45,7 +73,10 @@ function generateNumbers(sum, digitsNumber, integersCount) {
         }
     }
 
-    return numbers;
+    return {
+        numbers: numbers,
+        actualSum: sum,
+    };
 }
 
 export default {
@@ -54,19 +85,39 @@ export default {
             sum: 1000,
             digitsNumber: 3,
             integersCount: 4,
+            sumHasRandom: true,
+            actualSum: 1000,
             outputList: [],
+            showSum: false,
         }
     },
     methods: {
         calculate() {
             // Assuming generateNumbers is a globally accessible function
-            this.outputList = generateNumbers(this.sum, this.digitsNumber, this.integersCount);
+            let result = generateNumbers(this.sum, this.digitsNumber, this.integersCount, this.sumHasRandom);
+            this.outputList = result.numbers;
+            this.actualSum = result.actualSum;
+            this.showSum = false;
         },
+        showAnswer() {
+            this.showSum = true;
+        }
     },
 }
 </script>
   
 <style scoped>
-/* Add your CSS styles if needed */
+.number-list,
+.actual-sum {
+    font-size: 20px;
+}
+
+@media (max-width: 576px) {
+
+    .number-list,
+    .actual-sum {
+        font-size: 30px;
+    }
+}
 </style>
   
