@@ -13,7 +13,8 @@
   "dependencies": {
     "@vitejs/plugin-vue2": "^2.2.0",
     "bootstrap-vue": "^2.23.1",
-    "vue": "^2.7.15"
+    "vue": "^2.7.15",
+    "vue-router": "^3.6.5"
   },
   "devDependencies": {
     "eslint": "^8.49.0",

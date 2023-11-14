@@ -1,16 +1,16 @@
 <template>
     <div id="app">
-        <NumbersGenerator />
+        <AddNumbers />
     </div>
 </template>
   
 <script>
-import NumbersGenerator from './components/NumbersGenerator.vue'
+import AddNumbers from './components/AddNumbers.vue'
 
 export default {
     name: 'App',
     components: {
-        NumbersGenerator
+        AddNumbers
     }
 }
 </script>

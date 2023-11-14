@@ -9,7 +9,9 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
 import App from './App.vue'
+import router from './router'
 
 new Vue({
+    router,
     render: h => h(App)
 }).$mount('#app')
