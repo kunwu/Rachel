@@ -6,14 +6,8 @@
             </transition>
             <p class="actual-sum">= {{ actualSum }}</p>
         </div>
-        <div class="ml-1">
-            <div>
-                <input type="number" :value="inputSum" @click.stop="showNumPad = true" readonly />
-                <VueNumericKeypad :value.sync="inputSum" :show.sync="showNumPad" :options="numPadOptions" />
-            </div>
-        </div>
         <div class="row m-1">
-            <button @click="generateNumbers" class="btn btn-primary col-3">出题</button>
+            <button @click="calculate" class="btn btn-primary col-3">出题</button>
             <button @click="showAnswer" class="btn btn-info col-2 ml-2">答案</button>
         </div>
         <hr />
@@ -100,17 +94,7 @@ function generateNumbers(sum, digitsNumber, integersCount, sumHasRandom) {
     };
 }
 
-import Vue from 'vue';
-import Toast from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
-import VueNumericKeypad from 'vue-numeric-keypad';
-
-Vue.use(Toast);
-
 export default {
-    components: {
-        VueNumericKeypad,
-    },
     data() {
         return {
             sum: 1000,
@@ -120,21 +104,14 @@ export default {
             actualSumHide: 1000,
             actualSum: "?",
             outputList: [],
-            inputSum: "",
             showSum: false,
             numberListKey: 0,
             countCorrect: 0,
             countIncorrect: 0,
-            // for numpad
-            showNumPad: false,
-            numPadOptions: {
-                keyRandomize: false,
-                keyArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -1, -2],
-            },
         }
     },
     methods: {
-        generateNumbers() {
+        calculate() {
             // Assuming generateNumbers is a globally accessible function
             let result = generateNumbers(this.sum, this.digitsNumber, this.integersCount, this.sumHasRandom);
             this.outputList = result.numbers;
@@ -142,19 +119,9 @@ export default {
             this.actualSum = "?";
             this.showSum = false;
             this.numberListKey = this.numberListKey + 1;
-            this.showNumPad = false;
-            this.inputSum = "";
         },
         showAnswer() {
             this.actualSum = this.actualSumHide;
-            if (this.actualSum == this.inputSum) {
-                this.isCorrect();
-                this.$toast.success('答对了');
-            } else {
-                this.isInCorrect();
-                this.$toast.error('答错了');
-            }
-            this.showNumPad = false;
         },
         isCorrect() {
             this.countCorrect++;
@@ -168,7 +135,7 @@ export default {
         },
     },
     mounted() {
-        this.generateNumbers();
+        this.calculate();
     },
 }
 </script>

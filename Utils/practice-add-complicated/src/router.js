@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 
 import AddNumbersVue from './components/AddNumbers.vue';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
     {
@@ -13,7 +13,7 @@ const routes = [
     },
     {
         path: '/add-numbers',
-        name: 'Home',
+        name: 'AddNumbers',
         component: AddNumbersVue,
     },
 ];

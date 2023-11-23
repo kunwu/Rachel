@@ -14,7 +14,9 @@
     "@vitejs/plugin-vue2": "^2.2.0",
     "bootstrap-vue": "^2.23.1",
     "vue": "^2.7.15",
-    "vue-router": "^3.6.5"
+    "vue-numeric-keypad": "^1.2.5",
+    "vue-router": "^3.6.5",
+    "vue-toastification": "^1.7.14"
   },
   "devDependencies": {
     "eslint": "^8.49.0",
