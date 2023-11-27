@@ -1,203 +1,196 @@
 <template>
+    <div class="d-flex justify-center text-h4 py-5">心算连加</div>
     <div>
-        <div class="m-3">
-            <transition name="fade" mode="out-in">
-                <p class="number-list" v-if="outputList.length > 0" :key="numberListKey">{{ outputList.join(' + ') }}</p>
-            </transition>
-            <p class="actual-sum">= {{ actualSum }}</p>
-        </div>
-        <div class="ml-1">
-            <div>
-                <input type="number" :value="inputSum" @click.stop="showNumPad = true" readonly />
-                <VueNumericKeypad :value.sync="inputSum" :show.sync="showNumPad" :options="numPadOptions" />
-            </div>
-        </div>
-        <div class="row m-1">
-            <button @click="generateNumbers" class="btn btn-primary col-3">出题</button>
-            <button @click="showAnswer" class="btn btn-info col-2 ml-2">答案</button>
-        </div>
-        <hr />
-        <div class="row m-1">
-            <button @click="isCorrect" type="button" class="btn btn-success col-4">做对啦：{{ countCorrect
-            }}</button>
-            <button @click="isInCorrect" type="button" class="btn btn-danger col-4 ml-1">失误了：{{ countIncorrect
-            }}</button>
-            <button @click="resetScore" type="button" class="btn btn-info col-2 ml-3">重来</button>
-        </div>
-        <hr />
-        <div class="m-1"><b-button v-b-toggle.controlBox variant="primary">配置</b-button></div>
-        <b-collapse id="controlBox" class="mt-2">
-            <div class="card">
-                <div class="card-body">
-                    <div class="form-group">
-                        <label>总和: </label>
-                        <input v-model.number="sum" type="number" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>几位数: </label>
-                        <input v-model.number="digitsNumber" type="number" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>几个数: </label>
-                        <input v-model.number="integersCount" type="number" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>对和扰动: </label>
-                        <!-- 和是否扰动，默认 true -->
-                        <b-form-checkbox v-model="sumHasRandom">和扰动</b-form-checkbox>
-                    </div>
-                </div>
-            </div>
-        </b-collapse>
+        <v-carousel :continuous="false" :model-value="0" :show-arrows="false" :height="100" :hide-delimiters="true"
+            :progress="true">
+            <v-carousel-item v-for="(item, i) in numbersToAdd" :key="i">
+                <div class="d-flex fill-height justify-center align-center text-h4">{{ item }}</div>
+            </v-carousel-item>
+        </v-carousel>
     </div>
+    <div>
+        <v-text-field v-model="inputAnswer" prefix="和 =" placeholder="请输入数字之和" type="number"
+            hide-details="true"></v-text-field>
+    </div>
+    <div class="mx-2">
+        <div class="my-1">
+            <v-btn @click="checkAnswer">对答案</v-btn>
+            <span class="ml-2 font-weight-thin">({{ digitsSummary }})</span>
+        </div>
+        <div class="my-1">
+            <v-btn @click="generateNumbers">再来一题</v-btn>
+        </div>
+    </div>
+    <v-expansion-panels>
+        <v-expansion-panel>
+            <v-expansion-panel-title expand-icon="mdi-menu-down">配置</v-expansion-panel-title>
+            <v-expansion-panel-text>
+                <v-form>
+                    <v-text-field v-model="countOfNumbers" label="加数个数" type="number"
+                        :rules="[v => (v >= 2 && v <= 20) || 'Number must be between 2 and 20']"></v-text-field>
+                    <v-text-field v-model="numberOfDigits" label="加数位数" type="number"
+                        :rules="[v => (v >= 2 && v <= 6) || 'Number must be between 2 and 6']"></v-text-field>
+                    <v-select v-model="levelOfDifficulty" :items="[0, 1, 2]" label="难度"></v-select>
+                </v-form>
+            </v-expansion-panel-text>
+        </v-expansion-panel>
+    </v-expansion-panels>
+    <!-- 结果对话框 -->
+    <v-dialog v-model="dialog" max-width="300px">
+        <v-card>
+            <v-card-title class="text-h5">{{ dialogTitle }}</v-card-title>
+            <v-card-text v-if="showAnswer">答案：{{ correctAnswer }}</v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn v-if="!correct" color="red darken-1" text @click="showAnswer = true">看答案</v-btn>
+                <v-btn color="green darken-1" text @click="closeDialog">Close</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
   
-
- 
-  
 <script>
-function getRandomIntWithDigits(d) {
-    let min = Math.pow(10, d - 1);
-    let max = Math.pow(10, d) - 1;
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function generateNumbers(sum, digitsNumber, integersCount, sumHasRandom) {
-    if (sumHasRandom) {
-        sum = sum + Math.floor(Math.random() * 20 - 10);
-    }
-
-    if (sum < Math.pow(10, digitsNumber - 1) * integersCount || sum > Math.pow(10, digitsNumber) * integersCount) {
-        return [];
-    }
-
-    let numbers = [];
-    let found = false;
-
-    while (!found) {
-        numbers = [];
-        let currentSum = 0;
-
-        for (let i = 0; i < integersCount - 1; i++) {
-            numbers[i] = getRandomIntWithDigits(digitsNumber);
-            currentSum += numbers[i];
-            if (currentSum > sum) {
-                break;
-            }
-        }
-
-        if ((currentSum + Math.pow(10, digitsNumber - 1) > sum) || (currentSum + Math.pow(10, digitsNumber) - 1 < sum)) {
-            continue;
-        } else {
-            numbers[integersCount - 1] = sum - currentSum;
-            found = true;
-        }
-    }
-
-    return {
-        numbers: numbers,
-        actualSum: sum,
-    };
-}
-
-import Vue from 'vue';
-import Toast from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
-import VueNumericKeypad from 'vue-numeric-keypad';
-
-Vue.use(Toast);
 
 export default {
+    name: 'AddNumbers',
     components: {
-        VueNumericKeypad,
     },
     data() {
         return {
-            sum: 1000,
-            digitsNumber: 3,
-            integersCount: 4,
-            sumHasRandom: true,
-            actualSumHide: 1000,
-            actualSum: "?",
-            outputList: [],
-            inputSum: "",
-            showSum: false,
-            numberListKey: 0,
-            countCorrect: 0,
-            countIncorrect: 0,
-            // for numpad
-            showNumPad: false,
-            numPadOptions: {
-                keyRandomize: false,
-                keyArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, -1, -2],
-            },
+            numbersToAdd: [],
+            inputAnswer: null,
+            // dialog
+            dialog: false,
+            dialogTitle: '',
+            correct: false,
+            correctAnswer: null,
+            showAnswer: false,
+            // configuration
+            countOfNumbers: 4,
+            numberOfDigits: 3,
+            levelOfDifficulty: 2,
         }
     },
     methods: {
         generateNumbers() {
-            // Assuming generateNumbers is a globally accessible function
-            let result = generateNumbers(this.sum, this.digitsNumber, this.integersCount, this.sumHasRandom);
-            this.outputList = result.numbers;
-            this.actualSumHide = result.actualSum;
-            this.actualSum = "?";
-            this.showSum = false;
-            this.numberListKey = this.numberListKey + 1;
-            this.showNumPad = false;
-            this.inputSum = "";
+            let countOfNumbers = this.countOfNumbers;
+            let numberOfDigits = this.numberOfDigits;
+            let levelOfDifficulty = this.levelOfDifficulty;
+
+            let numbers = [];
+            let max = Math.pow(10, numberOfDigits) - 1;
+            let min = Math.pow(10, numberOfDigits - 1);
+            let countTry = 100;
+            do {
+                numbers = [];
+                for (let i = 0; i < countOfNumbers; i++) {
+                    let number = Math.floor(Math.random() * (max - min + 1)) + min;
+                    numbers.push(number);
+                }
+                console.log(numbers);
+                if (countTry-- < 0) {
+                    alert('无法生成符合条件的题目');
+                    break;
+                }
+            } while (!this.meetsDifficulty(numbers, levelOfDifficulty));
+            console.log(numbers.reduce((a, b) => a + b, 0));
+
+            this.numbersToAdd = numbers;
+            this.inputAnswer = null;
+            this.dialog = false;
         },
-        showAnswer() {
-            this.actualSum = this.actualSumHide;
-            if (this.actualSum == this.inputSum) {
-                this.isCorrect();
-                this.$toast.success('答对了');
-            } else {
-                this.isInCorrect();
-                this.$toast.error('答错了');
+        meetsDifficulty(numbers, levelOfDifficulty) {
+            let simpleCarryCounts = [];
+            let doubleCarryCounts = [];
+
+            let sum = numbers[0];
+
+            for (let i = 1; i < numbers.length; i++) {
+                let carry = 0;
+                let b = numbers[i];
+                let digitsSum = sum.toString().split('').reverse();
+                let digitsB = b.toString().split('').reverse();
+                let maxLen = Math.max(digitsSum.length, digitsB.length);
+                let currentSum = 0;
+                simpleCarryCounts.push(0);
+                doubleCarryCounts.push(0);
+                for (let j = 0; j < maxLen; j++) {
+                    let digitSum = digitsSum[j] ? parseInt(digitsSum[j]) : 0;
+                    let digitB = digitsB[j] ? parseInt(digitsB[j]) : 0;
+                    if (carry > 0) {
+                        simpleCarryCounts[i - 1] = simpleCarryCounts[i - 1] + 1;
+                    }
+                    if (carry > 0 && digitSum + digitB + carry >= 10) {
+                        doubleCarryCounts[i - 1] = doubleCarryCounts[i - 1] + 1;
+                    }
+                    // console.log('digitsSum=', digitsSum, 'digitsB=', digitsB, 'digitSum=', digitSum, 'digitB=', digitB, 'carry=', carry);
+                    // console.log('simpleCarryCounts=', simpleCarryCounts, 'doubleCarryCounts=', doubleCarryCounts);
+                    currentSum = digitSum + digitB + carry;
+                    carry = Math.floor(currentSum / 10);
+                }
+                if (carry > 0) {
+                    simpleCarryCounts[i - 1] = simpleCarryCounts[i - 1] + 1;
+                }
+                sum = sum + b;
             }
-            this.showNumPad = false;
+
+            console.log('按轮单纯进位个数：', simpleCarryCounts);
+            console.log('按轮二次进位个数', doubleCarryCounts);
+
+            let level = 0;
+            if (simpleCarryCounts.reduce((a, b) => a + b, 0) > 0) {
+                level = 1;
+            }
+            if (doubleCarryCounts.reduce((a, b) => a + b, 0) > 0) {
+                level = 2;
+            }
+
+            return level == levelOfDifficulty;
         },
-        isCorrect() {
-            this.countCorrect++;
+        checkAnswer() {
+            let answer = this.numbersToAdd.reduce((a, b) => a + b, 0);
+            this.correctAnswer = answer;
+            if (answer == this.inputAnswer) {
+                this.dialogTitle = '答对了';
+                this.correct = true;
+            } else {
+                if (this.inputAnswer == '' || this.inputAnswer == null) {
+                    this.dialogTitle = '没回答';
+                } else {
+                    if (answer > this.inputAnswer) {
+                        this.dialogTitle = '答小了';
+                    } else if (answer < this.inputAnswer) {
+                        this.dialogTitle = '答大了';
+                    } else {
+                        this.dialogTitle = '答错了';
+                    }
+                }
+                this.correct = false;
+            }
+            this.dialog = true;
         },
-        isInCorrect() {
-            this.countIncorrect++;
+        closeDialog() {
+            this.dialog = false;
+            this.showAnswer = false;
         },
-        resetScore() {
-            this.countCorrect = 0;
-            this.countIncorrect = 0;
-        },
+    },
+    computed: {
+        digitsSummary() {
+            let sum = this.numbersToAdd.reduce((acc, num) => {
+                let digits = num.toString().split('').map(Number);
+                return acc + digits.reduce((a, b) => a + b, 0);
+            }, 0);
+
+            while (sum > 9) {
+                let digits = sum.toString().split('').map(Number);
+                sum = digits.reduce((a, b) => a + b, 0);
+            }
+
+            return sum;
+        }
     },
     mounted() {
         this.generateNumbers();
-    },
-}
-</script>
-  
-<style scoped>
-.number-list,
-.actual-sum {
-    font-size: 20px;
-}
-
-@media (max-width: 576px) {
-
-    .number-list,
-    .actual-sum {
-        font-size: 30px;
     }
 }
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to
-
-/* .fade-leave-active below version 2.1.8 */
-    {
-    opacity: 0;
-}
-</style>
-  
+</script>

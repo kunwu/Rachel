@@ -1,26 +1,22 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-
-import AddNumbersVue from './components/AddNumbers.vue';
-
-Vue.use(VueRouter);
+import { createRouter, createWebHistory } from 'vue-router'
+import AddNumbers from './components/AddNumbers.vue'
 
 const routes = [
     {
         path: '/',
         name: 'Home',
-        component: AddNumbersVue,
+        component: AddNumbers
     },
     {
         path: '/add-numbers',
         name: 'AddNumbers',
-        component: AddNumbersVue,
-    },
-];
+        component: AddNumbers
+    }
+]
 
-const router = new VueRouter({
-    routes,
-    mode: 'history',
-});
+const router = createRouter({
+    history: createWebHistory(),
+    routes
+})
 
-export default router;
+export default router
