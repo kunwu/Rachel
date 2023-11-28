@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex justify-center text-h4 py-5">心算连加</div>
     <div>
-        <v-carousel :continuous="false" :model-value="0" :show-arrows="false" :height="100" :hide-delimiters="true"
+        <v-carousel v-model="carouselIndex" :continuous="false" :show-arrows="true" :height="100" :hide-delimiters="true"
             :progress="true">
             <v-carousel-item v-for="(item, i) in numbersToAdd" :key="i">
                 <div class="d-flex fill-height justify-center align-center text-h4">{{ item }}</div>
@@ -9,7 +9,7 @@
         </v-carousel>
     </div>
     <div>
-        <v-text-field v-model="inputAnswer" prefix="和 =" placeholder="请输入数字之和" type="number"
+        <v-text-field v-model="inputAnswer" prefix="和 =" placeholder="请输入上面数字之和" type="number"
             hide-details="true"></v-text-field>
     </div>
     <div class="mx-2">
@@ -59,6 +59,8 @@ export default {
         return {
             numbersToAdd: [],
             inputAnswer: null,
+            // carousel
+            carouselIndex: 0,
             // dialog
             dialog: false,
             dialogTitle: '',
@@ -90,11 +92,12 @@ export default {
                 console.log(numbers);
                 if (countTry-- < 0) {
                     alert('无法生成符合条件的题目');
-                    break;
+                    return;
                 }
             } while (!this.meetsDifficulty(numbers, levelOfDifficulty));
             console.log(numbers.reduce((a, b) => a + b, 0));
 
+            this.carouselIndex = 0;
             this.numbersToAdd = numbers;
             this.inputAnswer = null;
             this.dialog = false;
