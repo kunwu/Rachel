@@ -1,16 +1,16 @@
 <template>
     <div class="d-flex justify-center text-h4 py-5">心算连加</div>
     <div>
-        <v-carousel v-model="carouselIndex" :continuous="false" :show-arrows="true" :height="100" :hide-delimiters="true"
-            :progress="true">
+        <v-carousel v-model="carouselIndex" :continuous="false" :show-arrows="false" :height="130"
+            :hide-delimiter-background="true" :progress="true">
             <v-carousel-item v-for="(item, i) in numbersToAdd" :key="i">
-                <div class="d-flex fill-height justify-center align-center text-h4">{{ item }}</div>
+                <div class="d-flex fill-height justify-center pt-6 text-h3">{{ item }}</div>
             </v-carousel-item>
         </v-carousel>
     </div>
     <div>
         <v-text-field v-model="inputAnswer" prefix="和 =" placeholder="请输入上面数字之和" type="number"
-            hide-details="true"></v-text-field>
+            hide-details="true" inputmode="numeric"></v-text-field>
     </div>
     <div class="mx-2">
         <div class="my-1">
