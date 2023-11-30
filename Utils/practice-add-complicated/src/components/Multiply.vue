@@ -27,7 +27,7 @@
     <v-app>
         <div class="d-flex justify-center text-h4 py-5" style="border-bottom: solid 2px black;">心算连加</div>
         <v-container d-flex justify-center align-center class="calc-container">
-            <v-row align="center" justify="center" class="mt-6">
+            <v-row align="center" justify="center" class="mt-3">
                 <!-- <v-col cols="1">
                     <div class="text-end monospace display-1">
                         <div></div>
