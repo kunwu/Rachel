@@ -43,6 +43,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn v-if="!correct" color="red darken-1" text @click="showAnswer = true">看答案</v-btn>
+                <v-btn v-if="correct" color="green darken-1" text @click="generateNumbers">再来一题</v-btn>
                 <v-btn color="green darken-1" text @click="closeDialog">Close</v-btn>
             </v-card-actions>
         </v-card>
