@@ -28,19 +28,23 @@
         <div class="d-flex justify-center text-h4 py-5" style="border-bottom: solid 2px black;">心算连加</div>
         <v-container d-flex justify-center align-center class="calc-container">
             <v-row align="center" justify="center" class="mt-6">
-                <v-col cols="1">
+                <!-- <v-col cols="1">
                     <div class="text-end monospace display-1">
                         <div></div>
                         <div>X</div>
                         <div></div>
                     </div>
-                </v-col>
+                </v-col> -->
                 <v-col cols="8">
                     <div class="text-end monospace display-1">
                         <div>{{ longNumber }}</div>
-                        <div>{{ shortNumber }}</div>
+                        <div class="position-relative">
+                            <v-icon class="postition-absolute"
+                                style="left: -18vh;">mdi-close</v-icon>
+                            {{ shortNumber }}
+                        </div>
                         <hr>
-                        <div>&nbsp;{{ answer }}</div>
+                        <div>{{ answer }}</div>
                     </div>
                 </v-col>
             </v-row>
@@ -142,11 +146,7 @@ export default {
             let max = Math.pow(10, this.numberOfDigits) - 1;
             let min = Math.pow(10, this.numberOfDigits - 1);
             this.longNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-            // Get a random number between 1 and 10, square it, then map the range from 1-100 to 2-9
-            let randomNum = Math.random() * 9.9;
-            let squaredNum = Math.pow(randomNum, 2);
-            this.shortNumber = 9 - Math.floor(squaredNum / 11);
-            console.log('randomNum: ' + randomNum + ', squaredNum: ' + squaredNum + ', shortNumber: ' + this.shortNumber);
+            this.shortNumber = Math.floor(Math.sqrt(100 * Math.random()) * 8 / 10) + 2;
             this.answer = '';
             this.closeDialog();
         },
