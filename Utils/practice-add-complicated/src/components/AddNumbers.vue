@@ -1,5 +1,4 @@
 <template>
-    <div class="d-flex justify-center text-h4 py-5">心算连加</div>
     <div>
         <v-carousel v-model="carouselIndex" :continuous="false" :show-arrows="false" :height="130"
             :hide-delimiter-background="true" :progress="true">

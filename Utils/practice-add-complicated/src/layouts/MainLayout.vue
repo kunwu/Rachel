@@ -3,7 +3,7 @@
         <!-- Header -->
         <v-app-bar app color="primary" dark>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-toolbar-title>小吴双的智慧宝盒</v-toolbar-title>
+            <v-toolbar-title>小吴双的智慧宝盒 - {{ currentRouteDisplay }}</v-toolbar-title>
         </v-app-bar>
 
         <!-- Navigation Drawer -->
@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
     name: 'MainLayout',
@@ -39,10 +39,13 @@ export default {
         const routes = router.options.routes.map(route => ({
             name: route.name,
             path: route.path,
-            display: route.display
+            display: route.meta.display
         }));
 
-        return { drawer, routes };
+        const currentRoute = useRoute();
+        const currentRouteDisplay = computed(() => currentRoute.meta.display);
+
+        return { drawer, routes, currentRouteDisplay };
     },
 };
 </script>
