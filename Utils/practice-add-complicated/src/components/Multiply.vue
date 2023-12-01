@@ -6,11 +6,7 @@
 }
 
 .calc-container {
-    height: 35vh;
-}
-
-.pad-row {
-    height: 6vh;
+    height: 180px;
 }
 
 .pad-container {
@@ -18,21 +14,25 @@
     border-bottom: 1px solid #ccc;
 }
 
+.pad-row {
+    height: 62px;
+
+}
+
 .btn-pad {
-    font-size: 1.2em;
+    font-size: 2em;
 }
 </style>
 
 <template>
     <v-app>
         <v-container d-flex justify-center align-center class="calc-container">
-            <v-row align="center" justify="center" class="mt-3">
+            <v-row align="center" justify="center">
                 <v-col cols="8">
                     <div class="text-end monospace display-1">
                         <div>{{ longNumber }}</div>
                         <div class="position-relative">
-                            <v-icon class="postition-absolute"
-                                style="left: -18vh;" icon="$close" />
+                            <v-icon class="postition-absolute" style="left: -150px;" icon="$close" />
                             {{ shortNumber }}
                         </div>
                         <hr>
@@ -44,28 +44,28 @@
         <v-container fluid class="px-4 py-4 pad-container">
             <v-row class="pad-row align-center">
                 <v-col class="px-1 py-0" v-for="n in [1, 2, 3]" :key="n">
-                    <v-btn block class="btn-pad" @click="appendToAnswer(n)">{{ n }}</v-btn>
+                    <v-btn block height="60" class="btn-pad" @click="appendToAnswer(n)">{{ n }}</v-btn>
                 </v-col>
             </v-row>
             <v-row class="pad-row align-center">
                 <v-col class="px-1 py-0" v-for="n in [4, 5, 6]" :key="n">
-                    <v-btn block class="btn-pad" @click="appendToAnswer(n)">{{ n }}</v-btn>
+                    <v-btn block height="60" class="btn-pad" @click="appendToAnswer(n)">{{ n }}</v-btn>
                 </v-col>
             </v-row>
             <v-row class="pad-row align-center">
                 <v-col class="px-1 py-0" v-for="n in [7, 8, 9]" :key="n">
-                    <v-btn block class="btn-pad" @click="appendToAnswer(n)">{{ n }}</v-btn>
+                    <v-btn block height="60" class="btn-pad" @click="appendToAnswer(n)">{{ n }}</v-btn>
                 </v-col>
             </v-row>
             <v-row class="pad-row align-center">
                 <v-col class="px-1 py-0">
-                    <v-btn block class="btn-pad" @click="appendToAnswer(0)">0</v-btn>
+                    <v-btn block height="60" class="btn-pad" @click="appendToAnswer(0)">0</v-btn>
                 </v-col>
                 <v-col class="px-1 py-0">
-                    <v-btn block class="btn-pad" @click="deleteLastDigit">del</v-btn>
+                    <v-btn block height="60" class="btn-pad" @click="deleteLastDigit">del</v-btn>
                 </v-col>
                 <v-col class="px-1 py-0">
-                    <v-btn block class="btn-pad" @click="clearAnswer">clr</v-btn>
+                    <v-btn block height="60" class="btn-pad" @click="clearAnswer">clr</v-btn>
                 </v-col>
             </v-row>
         </v-container>
@@ -79,6 +79,16 @@
                 </v-col>
             </v-row>
         </v-container>
+        <!-- 配置区 -->
+        <v-expansion-panels model-value="">
+            <v-expansion-panel>
+                <v-expansion-panel-title expand-icon="$dropdown">配置</v-expansion-panel-title>
+                <v-expansion-panel-text>
+                    <v-slider v-model="numberOfDigits" :min="2" :max="9" step="1" thumb-label="always"
+                        label="第一个乘数的位数"></v-slider>
+                </v-expansion-panel-text>
+            </v-expansion-panel>
+        </v-expansion-panels>
         <!-- 结果对话框 -->
         <v-dialog v-model="dialog" max-width="300px">
             <v-card>
@@ -100,7 +110,7 @@
 export default {
     data() {
         return {
-            numberOfDigits: 9,
+            numberOfDigits: 6,
             longNumber: 987654321,
             shortNumber: 7,
             answer: '',
@@ -150,6 +160,11 @@ export default {
     },
     mounted() {
         this.nextQuestion();
+    },
+    watch: {
+        numberOfDigits() {
+            this.nextQuestion();
+        },
     },
 };
 </script>
