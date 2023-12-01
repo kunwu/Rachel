@@ -16,7 +16,7 @@
     "pages:deploy": "npm run build && wrangler pages deploy ./dist --commit-dirty=true"
   },
   "dependencies": {
-    "@mdi/font": "^7.3.67",
+    "@mdi/js": "^7.3.67",
     "vue": "^3.3.8",
     "vue-router": "^4.0.13",
     "vuetify": "^3.4.0-beta.1",

@@ -22,7 +22,7 @@
     </div>
     <v-expansion-panels>
         <v-expansion-panel>
-            <v-expansion-panel-title expand-icon="mdi-menu-down">配置</v-expansion-panel-title>
+            <v-expansion-panel-title expand-icon="$dropdown">配置</v-expansion-panel-title>
             <v-expansion-panel-text>
                 <v-form>
                     <v-text-field v-model="countOfNumbers" label="加数个数" type="number"

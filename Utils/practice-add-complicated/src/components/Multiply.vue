@@ -27,19 +27,12 @@
     <v-app>
         <v-container d-flex justify-center align-center class="calc-container">
             <v-row align="center" justify="center" class="mt-3">
-                <!-- <v-col cols="1">
-                    <div class="text-end monospace display-1">
-                        <div></div>
-                        <div>X</div>
-                        <div></div>
-                    </div>
-                </v-col> -->
                 <v-col cols="8">
                     <div class="text-end monospace display-1">
                         <div>{{ longNumber }}</div>
                         <div class="position-relative">
                             <v-icon class="postition-absolute"
-                                style="left: -18vh;">mdi-close</v-icon>
+                                style="left: -18vh;" icon="$close" />
                             {{ shortNumber }}
                         </div>
                         <hr>
@@ -103,6 +96,7 @@
 </template>
   
 <script>
+
 export default {
     data() {
         return {
