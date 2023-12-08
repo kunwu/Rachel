@@ -15,8 +15,11 @@
                                     <v-expansion-panel-text>
                                         <v-row>
                                             <v-col cols="3">
-                                                <v-slider v-model="level" :max="4" :min="0" step="1" thumb-label
-                                                    label="Level"></v-slider>
+                                                <v-select v-model="level" :items="[0, 1, 2, 3, 4]" label="Level"></v-select>
+                                            </v-col>
+                                            <v-col cols="3">
+                                                <v-select v-model="numberOfGroups" :items="[1, 2, 4, 10, 20]"
+                                                    label="Number of Groups"></v-select>
                                             </v-col>
                                         </v-row>
                                     </v-expansion-panel-text>
