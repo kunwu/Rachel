@@ -2,7 +2,7 @@
     <v-container class="whole-pad">
         <span class="letter-group" v-for="group in letterGroups" :key="group.id">
             <span class="letter-pair" v-for="letterCell in group.letterCells" :key="letterCell.id">
-                <span class="finger-number">0</span>
+                <span class="finger-number">{{ mappingLettersToFingers[letterCell.letter]['finger'] }}</span>
                 <span :class="getLetterClass(letterCell.id)">{{ letterCell.letter }}</span>
                 <span class="incorrect-indicator">{{ lettersUserTypedIncorrect[letterCell.id] }}</span>
             </span>
@@ -23,6 +23,13 @@ interface letterCell {
 interface LetterGroup {
     id: number
     letterCells: letterCell[]
+}
+
+interface FingerInfo {
+    hand: "L" | "R" | "B";  // left, right, both
+    finger: number;
+    row: number;
+    shift: boolean;
 }
 
 const props = defineProps({
@@ -107,8 +114,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
 }
 
 const getLetterClass = (id: number) => {
-    if (id >= lettersUserTypedIncorrect.value.length) {
+    if (id > lettersUserTypedIncorrect.value.length) {
         return 'not-typed'
+    } else if (id == lettersUserTypedIncorrect.value.length && id < lettersToType.value.length) {
+        return 'typing'
     }
     const letter = lettersUserTypedIncorrect.value[id]
     if (letter === '') {
@@ -125,6 +134,55 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('keypress', handleKeyPress);
 });
+
+// prepare the mapping of letters to fingers
+const keyboardLayout = {
+    "L": [
+        { row: 2, keys: ['1', '2', '3', '4', '5'] },
+        { row: 1, keys: ['q', 'w', 'e', 'r', 't'] },
+        { row: 0, keys: ['a', 's', 'd', 'f', 'g'] },
+        { row: -1, keys: ['z', 'x', 'c', 'v', 'b'] },
+    ],
+    "R": [
+        { row: 2, keys: ['6', '7', '8', '9', '0', '-', '='] },
+        { row: 1, keys: ['y', 'u', 'i', 'o', 'p', '[', ']', '\\'] },
+        { row: 0, keys: ['h', 'j', 'k', 'l', ';', "'"] },
+        { row: -1, keys: ['n', 'm', ',', '.', '/'] },
+    ],
+    "shift": [
+        { hand: "L", finger: 1, row: 2, keys: ['!', '@', '#', '$', '%'] },
+        { hand: "R", finger: 1, row: 2, keys: ['^', '&', '*', '(', ')', '_', '+'] },
+        { hand: "L", finger: 1, row: 1, keys: ['Q', 'W', 'E', 'R', 'T'] },
+        { hand: "R", finger: 1, row: 1, keys: ['Y', 'U', 'I', 'O', 'P', '{', '}', '|'] },
+        { hand: "L", finger: 1, row: 0, keys: ['A', 'S', 'D', 'F', 'G'] },
+        { hand: "R", finger: 1, row: 0, keys: ['H', 'J', 'K', 'L', ':', '"'] },
+        { hand: "L", finger: 1, row: -1, keys: ['Z', 'X', 'C', 'V', 'B'] },
+        { hand: "R", finger: 1, row: -1, keys: ['N', 'M', '<', '>', '?'] },
+    ],
+}
+
+function generateCharToFinger(layout: any): Record<string, FingerInfo> {
+    const charToFinger: Record<string, FingerInfo> = {};
+
+    for (const hand of (['L', 'R'] as const)) {
+        for (const { row, keys } of layout[hand]) {
+            for (let i = 0; i < keys.length; i++) {
+                const finger = i < 3 ? i + 1 : 4;
+                charToFinger[keys[i]] = { hand, finger, row, shift: false };
+            }
+        }
+    }
+
+    for (const { hand, finger, row, keys } of layout['shift']) {
+        for (const key of keys) {
+            charToFinger[key] = { hand, finger, row, shift: true };
+        }
+    }
+
+    return charToFinger;
+}
+
+const mappingLettersToFingers = generateCharToFinger(keyboardLayout);
 
 </script>
 
@@ -167,16 +225,21 @@ onUnmounted(() => {
     height: 1ch;
 }
 
+.typing {
+    text-decoration: underline;
+}
+
 .typed-correct {
     color: darkcyan;
     font-weight: bold;
 }
 
 .typed-incorrect {
-    color:crimson;
+    color: crimson;
     font-weight: bold;
 }
 
 span.not-typed {
     color: black;
-}</style>
+}
+</style>
