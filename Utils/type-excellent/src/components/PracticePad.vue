@@ -5,6 +5,25 @@
                 <!-- Typing Panel -->
                 <typing-panel :numberOfGroups="numberOfGroups" :numberOfLettersPerGroup="numberOfLettersPerGroup"
                     :level="level" style="border: solid 1px gray;"></typing-panel>
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-expansion-panels multiple v-model="configPanel">
+                                <v-expansion-panel>
+                                    <v-expansion-panel-title>Configuration</v-expansion-panel-title>
+                                    <v-expansion-panel-text>
+                                        <v-row>
+                                            <v-col cols="3">
+                                                <v-slider v-model="level" :max="4" :min="0" step="1" thumb-label
+                                                    label="Level"></v-slider>
+                                            </v-col>
+                                        </v-row>
+                                    </v-expansion-panel-text>
+                                </v-expansion-panel>
+                            </v-expansion-panels>
+                        </v-col>
+                    </v-row>
+                </v-container>
                 <!-- Evaluation Panel -->
                 <evaluation-panel></evaluation-panel>
                 <!-- Dialog -->
@@ -45,12 +64,14 @@ export default defineComponent({
         const numberOfGroups = ref(40)
         const numberOfLettersPerGroup = ref(4)
         const level = ref(0)
+        const configPanel = ref(null)
 
         return {
             dialogVisible,
             numberOfGroups,
             numberOfLettersPerGroup,
-            level
+            level,
+            configPanel
         }
     }
 })

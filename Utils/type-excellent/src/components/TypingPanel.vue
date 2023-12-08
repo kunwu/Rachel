@@ -299,10 +299,10 @@ const generateLetterGroups = (): LetterGroup[] => {
     background-color: lightyellow;
     min-width: 800px;
     display: flex;
-    gap: 50px 15px;
+    gap: 60px 30px;
     flex-flow: row wrap;
     font-family: monospace;
-    font-size: 1.2rem;
+    font-size: 2rem;
     justify-content: flex-start;
 }
 
@@ -323,6 +323,7 @@ const generateLetterGroups = (): LetterGroup[] => {
 }
 
 .finger-number {
+    text-align: center;
     opacity: 0.3;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 0.8rem;
