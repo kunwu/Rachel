@@ -44,7 +44,7 @@ export default defineComponent({
         const dialogVisible = ref(false)
         const numberOfGroups = ref(40)
         const numberOfLettersPerGroup = ref(4)
-        const level = ref(1)
+        const level = ref(0)
 
         return {
             dialogVisible,

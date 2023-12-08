@@ -2,7 +2,7 @@
     <v-container class="whole-pad">
         <span class="letter-group" v-for="group in letterGroups" :key="group.id">
             <span class="letter-pair" v-for="letterCell in group.letterCells" :key="letterCell.id">
-                <span class="finger-number">{{ mappingLettersToFingers[letterCell.letter]['finger'] }}</span>
+                <span class="finger-number">{{ keyboardLayout[letterCell.letter]['finger'] }}</span>
                 <span :class="getLetterClass(letterCell.id)">{{ letterCell.letter }}</span>
                 <span class="incorrect-indicator">{{ lettersUserTypedIncorrect[letterCell.id] }}</span>
             </span>
@@ -29,7 +29,7 @@ interface FingerInfo {
     hand: "L" | "R" | "B";  // left, right, both
     finger: number;
     row: number;
-    shift: boolean;
+    shift: 0 | 1 | 2;   // 0: no shift, 1: shift, 2: both
 }
 
 const props = defineProps({
@@ -53,32 +53,7 @@ const lettersToType = ref<string[]>([])
 const lettersUserTyped = ref<string[]>([])
 const lettersUserTypedIncorrect = ref<string[]>([])
 
-const letterGroups: ComputedRef<LetterGroup[]> = computed(() => {
-    // Create the letter groups
-    const groups = []
-    for (let i = 0; i < props.numberOfGroups; i++) {
-        // letters is array of {letter, idx}
-        let letterCells: letterCell[] = []
-        for (let j = 0; j < props.numberOfLettersPerGroup; j++) {
-            let idx = i * props.numberOfLettersPerGroup + j
-            // Generate a random letter
-            const letter = String.fromCharCode(97 + (i * props.numberOfLettersPerGroup + j) % 26)
-            const letterCell: letterCell = {
-                id: idx,
-                letter: letter
-            }
-            letterCells.push(letterCell)
-            // Add the letter to lettersToType
-            lettersToType.value.push(letter)
-        }
-        const group: LetterGroup = {
-            id: i,
-            letterCells: letterCells
-        }
-        groups.push(group)
-    }
-    return groups
-})
+const letterGroups: ComputedRef<LetterGroup[]> = computed(() => generateLetterGroups())
 
 const handleKeyPress = (event: KeyboardEvent) => {
     const typedLetter = event.key
@@ -136,53 +111,186 @@ onUnmounted(() => {
 });
 
 // prepare the mapping of letters to fingers
-const keyboardLayout = {
-    "L": [
-        { row: 2, keys: ['1', '2', '3', '4', '5'] },
-        { row: 1, keys: ['q', 'w', 'e', 'r', 't'] },
-        { row: 0, keys: ['a', 's', 'd', 'f', 'g'] },
-        { row: -1, keys: ['z', 'x', 'c', 'v', 'b'] },
-    ],
-    "R": [
-        { row: 2, keys: ['6', '7', '8', '9', '0', '-', '='] },
-        { row: 1, keys: ['y', 'u', 'i', 'o', 'p', '[', ']', '\\'] },
-        { row: 0, keys: ['h', 'j', 'k', 'l', ';', "'"] },
-        { row: -1, keys: ['n', 'm', ',', '.', '/'] },
-    ],
-    "shift": [
-        { hand: "L", finger: 1, row: 2, keys: ['!', '@', '#', '$', '%'] },
-        { hand: "R", finger: 1, row: 2, keys: ['^', '&', '*', '(', ')', '_', '+'] },
-        { hand: "L", finger: 1, row: 1, keys: ['Q', 'W', 'E', 'R', 'T'] },
-        { hand: "R", finger: 1, row: 1, keys: ['Y', 'U', 'I', 'O', 'P', '{', '}', '|'] },
-        { hand: "L", finger: 1, row: 0, keys: ['A', 'S', 'D', 'F', 'G'] },
-        { hand: "R", finger: 1, row: 0, keys: ['H', 'J', 'K', 'L', ':', '"'] },
-        { hand: "L", finger: 1, row: -1, keys: ['Z', 'X', 'C', 'V', 'B'] },
-        { hand: "R", finger: 1, row: -1, keys: ['N', 'M', '<', '>', '?'] },
-    ],
-}
+const keyboardLayout: Record<string, FingerInfo> = {
+    "`": { hand: "L", finger: 4, row: 2, shift: 0 },
+    "1": { hand: "L", finger: 4, row: 2, shift: 0 },
+    "2": { hand: "L", finger: 3, row: 2, shift: 0 },
+    "3": { hand: "L", finger: 2, row: 2, shift: 0 },
+    "4": { hand: "L", finger: 1, row: 2, shift: 0 },
+    "5": { hand: "L", finger: 1, row: 2, shift: 0 },
+    "6": { hand: "R", finger: 1, row: 2, shift: 0 },
+    "7": { hand: "R", finger: 1, row: 2, shift: 0 },
+    "8": { hand: "R", finger: 2, row: 2, shift: 0 },
+    "9": { hand: "R", finger: 3, row: 2, shift: 0 },
+    "0": { hand: "R", finger: 4, row: 2, shift: 0 },
+    "-": { hand: "R", finger: 4, row: 2, shift: 0 },
+    "=": { hand: "R", finger: 4, row: 2, shift: 0 },
+    "~": { hand: "L", finger: 4, row: 2, shift: 1 },
+    "!": { hand: "L", finger: 4, row: 2, shift: 1 },
+    "@": { hand: "L", finger: 3, row: 2, shift: 1 },
+    "#": { hand: "L", finger: 2, row: 2, shift: 1 },
+    "$": { hand: "L", finger: 1, row: 2, shift: 1 },
+    "%": { hand: "L", finger: 1, row: 2, shift: 1 },
+    "^": { hand: "R", finger: 1, row: 2, shift: 1 },
+    "&": { hand: "R", finger: 1, row: 2, shift: 1 },
+    "*": { hand: "R", finger: 2, row: 2, shift: 1 },
+    "(": { hand: "R", finger: 3, row: 2, shift: 1 },
+    ")": { hand: "R", finger: 4, row: 2, shift: 1 },
+    "_": { hand: "R", finger: 4, row: 2, shift: 1 },
+    "+": { hand: "R", finger: 4, row: 2, shift: 1 },
+    "q": { hand: "L", finger: 4, row: 1, shift: 0 },
+    "w": { hand: "L", finger: 3, row: 1, shift: 0 },
+    "e": { hand: "L", finger: 2, row: 1, shift: 0 },
+    "r": { hand: "L", finger: 1, row: 1, shift: 0 },
+    "t": { hand: "L", finger: 1, row: 1, shift: 0 },
+    "y": { hand: "R", finger: 1, row: 1, shift: 0 },
+    "u": { hand: "R", finger: 1, row: 1, shift: 0 },
+    "i": { hand: "R", finger: 2, row: 1, shift: 0 },
+    "o": { hand: "R", finger: 3, row: 1, shift: 0 },
+    "p": { hand: "R", finger: 4, row: 1, shift: 0 },
+    "[": { hand: "R", finger: 4, row: 1, shift: 0 },
+    "]": { hand: "R", finger: 4, row: 1, shift: 0 },
+    "\\": { hand: "R", finger: 4, row: 1, shift: 0 },
+    "Q": { hand: "L", finger: 4, row: 1, shift: 1 },
+    "W": { hand: "L", finger: 3, row: 1, shift: 1 },
+    "E": { hand: "L", finger: 2, row: 1, shift: 1 },
+    "R": { hand: "L", finger: 1, row: 1, shift: 1 },
+    "T": { hand: "L", finger: 1, row: 1, shift: 1 },
+    "Y": { hand: "R", finger: 1, row: 1, shift: 1 },
+    "U": { hand: "R", finger: 1, row: 1, shift: 1 },
+    "I": { hand: "R", finger: 2, row: 1, shift: 1 },
+    "O": { hand: "R", finger: 3, row: 1, shift: 1 },
+    "P": { hand: "R", finger: 4, row: 1, shift: 1 },
+    "{": { hand: "R", finger: 4, row: 1, shift: 1 },
+    "}": { hand: "R", finger: 4, row: 1, shift: 1 },
+    "|": { hand: "R", finger: 4, row: 1, shift: 1 },
+    "a": { hand: "L", finger: 4, row: 0, shift: 0 },
+    "s": { hand: "L", finger: 3, row: 0, shift: 0 },
+    "d": { hand: "L", finger: 2, row: 0, shift: 0 },
+    "f": { hand: "L", finger: 1, row: 0, shift: 0 },
+    "g": { hand: "L", finger: 1, row: 0, shift: 0 },
+    "h": { hand: "R", finger: 1, row: 0, shift: 0 },
+    "j": { hand: "R", finger: 1, row: 0, shift: 0 },
+    "k": { hand: "R", finger: 2, row: 0, shift: 0 },
+    "l": { hand: "R", finger: 3, row: 0, shift: 0 },
+    ";": { hand: "R", finger: 4, row: 0, shift: 0 },
+    "'": { hand: "R", finger: 4, row: 0, shift: 0 },
+    "A": { hand: "L", finger: 4, row: 0, shift: 1 },
+    "S": { hand: "L", finger: 3, row: 0, shift: 1 },
+    "D": { hand: "L", finger: 2, row: 0, shift: 1 },
+    "F": { hand: "L", finger: 1, row: 0, shift: 1 },
+    "G": { hand: "L", finger: 1, row: 0, shift: 1 },
+    "H": { hand: "R", finger: 1, row: 0, shift: 1 },
+    "J": { hand: "R", finger: 1, row: 0, shift: 1 },
+    "K": { hand: "R", finger: 2, row: 0, shift: 1 },
+    "L": { hand: "R", finger: 3, row: 0, shift: 1 },
+    ":": { hand: "R", finger: 4, row: 0, shift: 1 },
+    "\"": { hand: "R", finger: 4, row: 0, shift: 1 },
+    "z": { hand: "L", finger: 4, row: -1, shift: 0 },
+    "x": { hand: "L", finger: 3, row: -1, shift: 0 },
+    "c": { hand: "L", finger: 2, row: -1, shift: 0 },
+    "v": { hand: "L", finger: 1, row: -1, shift: 0 },
+    "b": { hand: "L", finger: 1, row: -1, shift: 0 },
+    "n": { hand: "R", finger: 1, row: -1, shift: 0 },
+    "m": { hand: "R", finger: 1, row: -1, shift: 0 },
+    ",": { hand: "R", finger: 2, row: -1, shift: 0 },
+    ".": { hand: "R", finger: 3, row: -1, shift: 0 },
+    "/": { hand: "R", finger: 4, row: -1, shift: 0 },
+    "Z": { hand: "L", finger: 4, row: -1, shift: 1 },
+    "X": { hand: "L", finger: 3, row: -1, shift: 1 },
+    "C": { hand: "L", finger: 2, row: -1, shift: 1 },
+    "V": { hand: "L", finger: 1, row: -1, shift: 1 },
+    "B": { hand: "L", finger: 1, row: -1, shift: 1 },
+    "N": { hand: "R", finger: 1, row: -1, shift: 1 },
+    "M": { hand: "R", finger: 1, row: -1, shift: 1 },
+    "<": { hand: "R", finger: 2, row: -1, shift: 1 },
+    ">": { hand: "R", finger: 3, row: -1, shift: 1 },
+    "?": { hand: "R", finger: 4, row: -1, shift: 1 },
+};
 
-function generateCharToFinger(layout: any): Record<string, FingerInfo> {
-    const charToFinger: Record<string, FingerInfo> = {};
+// letter group generation
+type LevelConfig =
+    {
+        row: number, fingers: number[], hands: string[], shift: number
+    }[][];
 
-    for (const hand of (['L', 'R'] as const)) {
-        for (const { row, keys } of layout[hand]) {
-            for (let i = 0; i < keys.length; i++) {
-                const finger = i < 3 ? i + 1 : 4;
-                charToFinger[keys[i]] = { hand, finger, row, shift: false };
+const levelConfig: LevelConfig = [
+    [{ row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 }],
+    [
+        { row: 0, fingers: [1, 2, 3, 4], hands: ['L'], shift: 0 },
+        { row: 0, fingers: [1, 2, 3], hands: ['R'], shift: 0 }
+    ],
+    [{ row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 }],
+    [
+        { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
+        { row: 1, fingers: [1, 2], hands: ['L', 'R'], shift: 0 },
+    ],
+    [
+        { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 2 },
+        { row: 1, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
+    ],
+];
+
+const generateLetterCandidateSet = (levelConfig: LevelConfig, level: number): string[] => {
+    const candidateSet: string[] = [];
+    const config = levelConfig[level];
+    // iterate through keyboadLayout
+    for (const [key, value] of Object.entries(keyboardLayout)) {
+        // iterate through config
+        for (const c of config) {
+            // check if the key matches the config
+            if (
+                c.row === value.row &&
+                c.fingers.includes(value.finger) &&
+                c.hands.includes(value.hand) &&
+                (c.shift === 2 || c.shift === value.shift)
+            ) {
+                candidateSet.push(key);
             }
         }
     }
 
-    for (const { hand, finger, row, keys } of layout['shift']) {
-        for (const key of keys) {
-            charToFinger[key] = { hand, finger, row, shift: true };
-        }
+    return candidateSet;
+};
+
+const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: number, level: number): string[] => {
+    const letters: string[] = []
+
+    const candidateSet = generateLetterCandidateSet(levelConfig, level)
+    const numberOfLetters = numberOfGroups * numberOfLettersPerGroup
+    for (let i = 0; i < numberOfLetters; i++) {
+        const letter = candidateSet[Math.floor(Math.random() * candidateSet.length)]
+        letters.push(letter)
     }
 
-    return charToFinger;
+    return letters
 }
 
-const mappingLettersToFingers = generateCharToFinger(keyboardLayout);
+const generateLetterGroups = (): LetterGroup[] => {
+
+    const lettersGenerated = generateLetterArray(props.numberOfGroups, props.numberOfLettersPerGroup, props.level)
+
+    const groups = []
+    for (let i = 0; i < props.numberOfGroups; i++) {
+        let letterCells: letterCell[] = []
+        for (let j = 0; j < props.numberOfLettersPerGroup; j++) {
+            let idx = i * props.numberOfLettersPerGroup + j
+            const letter = lettersGenerated[idx]
+            const letterCell: letterCell = {
+                id: idx,
+                letter: letter
+            }
+            letterCells.push(letterCell)
+            lettersToType.value.push(letter)
+        }
+        const group: LetterGroup = {
+            id: i,
+            letterCells: letterCells
+        }
+        groups.push(group)
+    }
+    return groups
+}
 
 </script>
 
