@@ -73,6 +73,11 @@ const handleKeyPress = (event: KeyboardEvent) => {
         event.preventDefault()
     }
 
+    const totalLetters = props.numberOfGroups * props.numberOfLettersPerGroup
+    if (lettersUserTyped.value.length === totalLetters) {
+        return
+    }
+
     // Add the typed letter to lettersUserTyped
     lettersUserTyped.value.push(typedLetter)
     let idx = lettersUserTyped.value.length - 1
@@ -92,14 +97,12 @@ const handleKeyPress = (event: KeyboardEvent) => {
         }
     }
 
-
     // Check if the count reached the total
-    const totalLetters = props.numberOfGroups * props.numberOfLettersPerGroup
     if (lettersUserTyped.value.length === totalLetters) {
         // Notify the parent with the letters to type and the user typed letters
         emit("typingComplete", {
-            lettersToType: lettersToType.value,
-            lettersUserTyped: lettersUserTyped.value
+            lettersToType: lettersToType.value.slice(),
+            lettersUserTyped: lettersUserTyped.value.slice()
         })
     }
 }
@@ -324,7 +327,7 @@ const generateLetterGroups = (): LetterGroup[] => {
     font-family: monospace;
     font-size: 2rem;
     font-weight: lighter;
-    justify-content:space-around;
+    justify-content: space-around;
 }
 
 .letter-group {

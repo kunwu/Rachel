@@ -4,7 +4,7 @@
             <v-container style="border: solid 1px yellow;">
                 <!-- Typing Panel -->
                 <typing-panel :numberOfGroups="numberOfGroups" :numberOfLettersPerGroup="numberOfLettersPerGroup"
-                    :level="level" style="border: solid 1px gray;"></typing-panel>
+                    :level="level" @typingComplete="handleTypingComplete" style="border: solid 1px gray;"></typing-panel>
                 <v-container>
                     <v-row>
                         <v-col cols="12">
@@ -35,7 +35,7 @@
                                     Dialog Title
                                 </v-card-title>
                                 <v-card-text>
-                                    Dialog Content
+                                    {{ dialogContent }}
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-btn @click="dialogVisible = false">Close</v-btn>
@@ -61,17 +61,32 @@ export default defineComponent({
     },
     setup() {
         const dialogVisible = ref(false)
-        const numberOfGroups = ref(4)
+        const dialogContent = ref('')
+        const numberOfGroups = ref(1)
         const numberOfLettersPerGroup = ref(4)
         const level = ref(0)
         const configPanel = ref(null)
 
+        const handleTypingComplete = ({ lettersToType, lettersUserTyped }: { lettersToType: string[], lettersUserTyped: string[] }): void => {
+            let countCorrect = 0
+            const total = lettersToType.length
+            for (let i = 0; i < total; i++) {
+                if (lettersToType[i] === lettersUserTyped[i]) {
+                    countCorrect++
+                }
+            }
+            dialogContent.value = `You typed ${countCorrect} out of ${total} correctly.`
+            dialogVisible.value = true
+        }
+
         return {
             dialogVisible,
+            dialogContent,
             numberOfGroups,
             numberOfLettersPerGroup,
             level,
-            configPanel
+            configPanel,
+            handleTypingComplete
         }
     }
 })
