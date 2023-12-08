@@ -32,7 +32,7 @@
                     <div class="text-end monospace display-1">
                         <div>{{ longNumber }}</div>
                         <div class="position-relative">
-                            <v-icon class="postition-absolute" style="left: -150px;" icon="$close" />
+                            <v-icon class="position-absolute" style="left: 0px;" icon="$close" />
                             {{ shortNumber }}
                         </div>
                         <hr>
@@ -135,7 +135,7 @@ export default {
         },
         checkAnswer() {
             this.correctAnswer = this.longNumber * this.shortNumber;
-            if (this.answer == this.correctAnswer) {
+            if (this.answer === String(this.correctAnswer)) {
                 this.dialogTitle = '答对了！';
                 this.correct = true;
                 this.dialog = true;
