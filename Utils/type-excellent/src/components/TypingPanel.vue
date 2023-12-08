@@ -7,6 +7,8 @@
                 <span class="incorrect-indicator">{{ lettersUserTypedIncorrect[letterCell.id] }}</span>
             </span>
         </span>
+        <audio id="audio-typing" ref="audioPlayerTyping" src="src/assets/sounds/typing.mp3" preload="auto"></audio>
+        <audio id="audio-warning" ref="audioPlayerWarning" src="src/assets/sounds/warning.mp3" preload="auto"></audio>
     </v-container>
 </template>
 
@@ -55,6 +57,9 @@ const lettersUserTypedIncorrect = ref<string[]>([])
 
 const letterGroups: ComputedRef<LetterGroup[]> = computed(() => generateLetterGroups())
 
+const audioPlayerTyping = ref<HTMLAudioElement | null>(null)
+const audioPlayerWarning = ref<HTMLAudioElement | null>(null)
+
 const handleKeyPress = (event: KeyboardEvent) => {
     const typedLetter = event.key
     // Handle user keyboard typing input
@@ -73,9 +78,18 @@ const handleKeyPress = (event: KeyboardEvent) => {
     if (typedLetter !== lettersToType.value[idx]) {
         // Add the typed letter to lettersUserTypedIncorrect
         lettersUserTypedIncorrect.value.push(typedLetter)
+        if (audioPlayerWarning.value) {
+            audioPlayerWarning.value.currentTime = 0;
+            audioPlayerWarning.value.play();
+        }
     } else {
         lettersUserTypedIncorrect.value.push("")
+        if (audioPlayerTyping.value) {
+            audioPlayerTyping.value.currentTime = 0;
+            audioPlayerTyping.value.play();
+        }
     }
+
 
     // Check if the count reached the total
     const totalLetters = props.numberOfGroups * props.numberOfLettersPerGroup
