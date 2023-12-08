@@ -4,8 +4,8 @@
             <v-container style="border: solid 1px yellow;">
                 <!-- Typing Panel -->
                 <typing-panel :numberOfGroups="numberOfGroups" :numberOfLettersPerGroup="numberOfLettersPerGroup"
-                    :level="level" :regenerateCount="regenerateCount" @typingComplete="handleTypingComplete"
-                    style="border: solid 1px gray;"></typing-panel>
+                    :level="level" :regenerateCount="regenerateCount" :showFinger="showFinger" :enableSound="enableSound"
+                    @typingComplete="handleTypingComplete" style="border: solid 1px gray;"></typing-panel>
                 <v-container>
                     <v-row>
                         <v-col cols="12">
@@ -15,11 +15,17 @@
                                     <v-expansion-panel-text>
                                         <v-row>
                                             <v-col cols="3">
-                                                <v-select v-model="level" :items="[0, 1, 2, 3, 4]" label="Level"></v-select>
+                                                <v-select v-model="level" color="primary" :items="[0, 1, 2, 3, 4]" label="Level"></v-select>
                                             </v-col>
                                             <v-col cols="3">
-                                                <v-select v-model="numberOfGroups" :items="[1, 2, 4, 10, 20]"
-                                                    label="Number of Groups"></v-select>
+                                                <v-select v-model="numberOfGroups" color="primary" :items="[1, 2, 4, 10, 20]"
+                                                    label="Groups"></v-select>
+                                            </v-col>
+                                            <v-col cols="3">
+                                                <v-switch v-model="showFinger" color="primary" label="Finger"></v-switch>
+                                            </v-col>
+                                            <v-col cols="3">
+                                                <v-switch v-model="enableSound" color="primary" label="Sound"></v-switch>
                                             </v-col>
                                         </v-row>
                                     </v-expansion-panel-text>
@@ -69,6 +75,8 @@ export default defineComponent({
         const numberOfGroups = ref(1)
         const numberOfLettersPerGroup = ref(4)
         const level = ref(0)
+        const showFinger = ref(true)
+        const enableSound = ref(true)
         // regenerate control
         const regenerateCount = ref(0)
         // config panel
@@ -129,6 +137,8 @@ export default defineComponent({
             numberOfGroups,
             numberOfLettersPerGroup,
             level,
+            showFinger,
+            enableSound,
             regenerateCount,
             configPanel,
             handleDialogOpen,

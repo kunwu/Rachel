@@ -2,7 +2,7 @@
     <v-container class="whole-pad">
         <span class="letter-group" v-for="group in letterGroups" :key="group.id">
             <span class="letter-column" v-for="letterCell in group.letterCells" :key="letterCell.id">
-                <span class="finger-number">{{ keyboardLayout[letterCell.letter]['finger'] }}</span>
+                <span :class="getFingerClass(letterCell.letter)">{{ keyboardLayout[letterCell.letter]['finger'] }}</span>
                 <span :class="getLetterClass(letterCell.id)">{{ letterCell.letter }}</span>
                 <span class="incorrect-indicator">{{ lettersUserTypedIncorrect[letterCell.id] }}</span>
             </span>
@@ -50,6 +50,14 @@ const props = defineProps({
     regenerateCount: {
         type: Number,
         required: true
+    },
+    enableSound: {
+        type: Boolean,
+        required: false
+    },
+    showFinger: {
+        type: Boolean,
+        required: false
     }
 })
 
@@ -87,13 +95,13 @@ const handleKeyPress = (event: KeyboardEvent) => {
     if (typedLetter !== lettersToType.value[idx]) {
         // Add the typed letter to lettersUserTypedIncorrect
         lettersUserTypedIncorrect.value.push(typedLetter)
-        if (audioPlayerWarning.value) {
+        if (props.enableSound && audioPlayerWarning.value) {
             audioPlayerWarning.value.currentTime = 0;
             audioPlayerWarning.value.play();
         }
     } else {
         lettersUserTypedIncorrect.value.push("")
-        if (audioPlayerTyping.value) {
+        if (props.enableSound && audioPlayerTyping.value) {
             audioPlayerTyping.value.currentTime = 0;
             audioPlayerTyping.value.play();
         }
@@ -120,6 +128,27 @@ const getLetterClass = (id: number) => {
         return 'typed-correct'
     } else {
         return 'typed-incorrect'
+    }
+}
+
+const getFingerClass = (letter: string) => {
+    if (!props.showFinger) {
+        return 'finger-number finger-hide'
+    }
+    const hand = keyboardLayout[letter]['hand']
+    const shift = keyboardLayout[letter]['shift']
+    if (hand === 'L') {
+        if (shift === 0) {
+            return `finger-number hand-left`
+        } else {
+            return `finger-number hand-left finger-shift`
+        }
+    } else {
+        if (shift === 0) {
+            return `finger-number hand-right`
+        } else {
+            return `finger-number hand-right finger-shift`
+        }
     }
 }
 
@@ -353,12 +382,28 @@ const generateLetterGroups = (): LetterGroup[] => {
     line-height: 1;
 }
 
+.finger-hide {
+    visibility: hidden;
+}
+
 .finger-number {
-    text-align: center;
+    margin: 0 1px;
     opacity: 0.3;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 0.8rem;
     font-weight: 100;
+}
+
+.hand-left {
+    text-align: left;
+}
+
+.hand-right {
+    text-align: right;
+}
+
+.finger-shift {
+    border-bottom: double 2px currentColor;
 }
 
 .incorrect-indicator {
