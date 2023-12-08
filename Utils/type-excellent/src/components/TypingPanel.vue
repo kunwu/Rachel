@@ -1,14 +1,14 @@
 <template>
     <v-container class="whole-pad">
         <span class="letter-group" v-for="group in letterGroups" :key="group.id">
-            <span class="letter-pair" v-for="letterCell in group.letterCells" :key="letterCell.id">
+            <span class="letter-column" v-for="letterCell in group.letterCells" :key="letterCell.id">
                 <span class="finger-number">{{ keyboardLayout[letterCell.letter]['finger'] }}</span>
                 <span :class="getLetterClass(letterCell.id)">{{ letterCell.letter }}</span>
                 <span class="incorrect-indicator">{{ lettersUserTypedIncorrect[letterCell.id] }}</span>
             </span>
         </span>
-        <audio id="audio-typing" ref="audioPlayerTyping" src="src/assets/sounds/typing.mp3" preload="auto"></audio>
-        <audio id="audio-warning" ref="audioPlayerWarning" src="src/assets/sounds/warning.mp3" preload="auto"></audio>
+        <!-- <audio id="audio-typing" ref="audioPlayerTyping" src="src/assets/sounds/typing.mp3" preload="auto"></audio> -->
+        <!-- <audio id="audio-warning" ref="audioPlayerWarning" src="src/assets/sounds/warning.mp3" preload="auto"></audio> -->
     </v-container>
 </template>
 
@@ -16,6 +16,8 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
+import typingSound from '@/assets/sounds/typing.mp3'
+import warningSound from '@/assets/sounds/warning.mp3'
 
 interface letterCell {
     id: number
@@ -57,8 +59,8 @@ const lettersUserTypedIncorrect = ref<string[]>([])
 
 const letterGroups: ComputedRef<LetterGroup[]> = computed(() => generateLetterGroups())
 
-const audioPlayerTyping = ref<HTMLAudioElement | null>(null)
-const audioPlayerWarning = ref<HTMLAudioElement | null>(null)
+const audioPlayerTyping = ref(new Audio(typingSound))
+const audioPlayerWarning = ref(new Audio(warningSound))
 
 const handleKeyPress = (event: KeyboardEvent) => {
     const typedLetter = event.key
@@ -313,14 +315,16 @@ const generateLetterGroups = (): LetterGroup[] => {
 
 <style scoped>
 .whole-pad {
+    padding: 50px 60px;
     background-color: lightyellow;
-    min-width: 800px;
+    min-width: 600px;
     display: flex;
-    gap: 60px 30px;
+    gap: 40px 20px;
     flex-flow: row wrap;
     font-family: monospace;
     font-size: 2rem;
-    justify-content: flex-start;
+    font-weight: lighter;
+    justify-content:space-around;
 }
 
 .letter-group {
@@ -329,13 +333,13 @@ const generateLetterGroups = (): LetterGroup[] => {
     row-gap: 0;
 }
 
-.letter-pair {
+.letter-column {
     display: flex;
     flex-flow: column;
     column-gap: 0;
 }
 
-.letter-pair span {
+.letter-column span {
     line-height: 1;
 }
 
@@ -349,15 +353,17 @@ const generateLetterGroups = (): LetterGroup[] => {
 
 .incorrect-indicator {
     height: 1ch;
+    text-align: center;
+    font-size: 1.8rem;
 }
 
 .typing {
-    text-decoration: underline;
+    color: gray;
+    border-bottom: 2px solid currentColor;
 }
 
 .typed-correct {
-    color: darkcyan;
-    font-weight: bold;
+    color: black;
 }
 
 .typed-incorrect {
@@ -365,7 +371,7 @@ const generateLetterGroups = (): LetterGroup[] => {
     font-weight: bold;
 }
 
-span.not-typed {
-    color: black;
+.not-typed {
+    color: gray;
 }
 </style>

@@ -61,7 +61,7 @@ export default defineComponent({
     },
     setup() {
         const dialogVisible = ref(false)
-        const numberOfGroups = ref(40)
+        const numberOfGroups = ref(4)
         const numberOfLettersPerGroup = ref(4)
         const level = ref(0)
         const configPanel = ref(null)
