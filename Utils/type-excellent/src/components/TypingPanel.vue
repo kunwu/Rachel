@@ -267,8 +267,11 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
 }
 
 const generateLetterGroups = (): LetterGroup[] => {
-
     const lettersGenerated = generateLetterArray(props.numberOfGroups, props.numberOfLettersPerGroup, props.level)
+    // reset letterToType and lettersUserTyped
+    lettersToType.value = []
+    lettersUserTyped.value = []
+    lettersUserTypedIncorrect.value = []
 
     const groups = []
     for (let i = 0; i < props.numberOfGroups; i++) {
