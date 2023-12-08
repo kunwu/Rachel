@@ -7,8 +7,6 @@
                 <span class="incorrect-indicator">{{ lettersUserTypedIncorrect[letterCell.id] }}</span>
             </span>
         </span>
-        <!-- <audio id="audio-typing" ref="audioPlayerTyping" src="src/assets/sounds/typing.mp3" preload="auto"></audio> -->
-        <!-- <audio id="audio-warning" ref="audioPlayerWarning" src="src/assets/sounds/warning.mp3" preload="auto"></audio> -->
     </v-container>
 </template>
 
@@ -46,6 +44,10 @@ const props = defineProps({
         required: true
     },
     level: {
+        type: Number,
+        required: true
+    },
+    regenerateCount: {
         type: Number,
         required: true
     }
@@ -286,6 +288,7 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
 }
 
 const generateLetterGroups = (): LetterGroup[] => {
+    console.log(props.regenerateCount)
     const lettersGenerated = generateLetterArray(props.numberOfGroups, props.numberOfLettersPerGroup, props.level)
     // reset letterToType and lettersUserTyped
     lettersToType.value = []
