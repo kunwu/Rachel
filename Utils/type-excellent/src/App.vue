@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>小吴双的风暴打字机</v-toolbar-title>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" app>
@@ -21,7 +21,7 @@
 
     <v-footer app color="secondary" dark>
       <v-col class="text-center" cols="12">
-        <span>&copy; 2023 Your Company</span>
+        <span>&copy; 2023 吴双</span>
       </v-col>
     </v-footer>
   </v-app>
