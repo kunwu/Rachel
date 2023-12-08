@@ -288,7 +288,11 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
 }
 
 const generateLetterGroups = (): LetterGroup[] => {
-    console.log(props.regenerateCount)
+    // do something to reference props.regenerateCount to enforce invoke of this function
+    if (props.regenerateCount < 0) {
+        console.log('something unexpected happen')
+    }
+
     const lettersGenerated = generateLetterArray(props.numberOfGroups, props.numberOfLettersPerGroup, props.level)
     // reset letterToType and lettersUserTyped
     lettersToType.value = []
