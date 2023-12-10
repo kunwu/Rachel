@@ -20,7 +20,7 @@
                     <v-row>
                         <v-col cols="12">
                             <v-expansion-panels multiple v-model="configPanel">
-                                <v-expansion-panel>
+                                <v-expansion-panel variant="accordion">
                                     <v-expansion-panel-title>Configuration</v-expansion-panel-title>
                                     <v-expansion-panel-text>
                                         <v-row>
@@ -84,9 +84,9 @@ export default defineComponent({
         const dialogVisible = ref(false)
         const dialogContent = ref('')
         // params
-        const numberOfGroups = ref(1)
+        const numberOfGroups = ref(2)
         const numberOfLettersPerGroup = ref(4)
-        const level = ref(0)
+        const level = ref(1)
         const showFinger = ref(true)
         const enableSound = ref(true)
         // regenerate control

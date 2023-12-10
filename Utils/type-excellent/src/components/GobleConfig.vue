@@ -153,11 +153,74 @@ export const levelConfig: LevelConfig = [
     ],
 ];
 
+export const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: number, level: number): string[] => {
+    const letters: string[] = []
+    const numberOfLetters = numberOfGroups * numberOfLettersPerGroup
+
+    return generateLetterArrayByPredefinedLevel(level, numberOfLetters);
+};
+
+const generateLetterArrayByPredefinedLevel = (level: number, numberOfLetters: number): string[] => {
+    const config = levelConfig[level];
+    const lettersFrequency: { [key: string]: number } = {};
+
+    for (const c of config) {
+        const frequncyNotSplit: { [key: string]: number } = {};
+
+        for (const [key, value] of Object.entries(keyboardLayout)) {
+            if (
+                c.row === value.row &&
+                c.fingers.includes(value.finger) &&
+                c.hands.includes(value.hand) &&
+                (c.shift === 2 || c.shift === value.shift)
+            ) {
+                const frequency = c.frequency || 1;
+                frequncyNotSplit[key] = frequency;
+            }
+        }
+
+        const amplifier = 100;
+
+        for (const [key, value] of Object.entries(frequncyNotSplit)) {
+            const frequency = value / Object.keys(frequncyNotSplit).length;
+            lettersFrequency[key] = Math.floor(frequency * amplifier);
+        }
+    }
+
+    const lettersPool: string[] = [];
+
+    for (const [letter, frequency] of Object.entries(lettersFrequency)) {
+        const count = Math.floor(frequency * numberOfLetters);
+
+        for (let i = 0; i < count; i++) {
+            lettersPool.push(letter);
+        }
+    }
+
+    const letters: string[] = [];
+    let retry = 10;
+
+    while (letters.length < numberOfLetters) {
+        const randomIndex = Math.floor(Math.random() * lettersPool.length);
+        const randomLetter = lettersPool[randomIndex];
+
+        if (letters.length > 1 && letters[letters.length - 1] === letters[letters.length - 2] && letters[letters.length - 1] === randomLetter) {
+            if (retry-- > 0) {
+                continue;
+            }
+        }
+
+        letters.push(randomLetter);
+    }
+
+    return letters;
+};
+
 export default defineComponent({
     name: 'GlobalConfig',
     setup() {
-
-    }
+    },
 });
+
 
 </script>

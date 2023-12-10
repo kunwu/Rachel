@@ -14,7 +14,7 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
-import { keyboardLayout, levelConfig } from './GobleConfig.vue';
+import { keyboardLayout, generateLetterArray } from './GobleConfig.vue';
 import typingSound from '@/assets/sounds/typing.mp3'
 import warningSound from '@/assets/sounds/warning.mp3'
 
@@ -153,60 +153,6 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('keypress', handleKeyPress);
 });
-
-const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: number, level: number): string[] => {
-    const letters: string[] = []
-    const numberOfLetters = numberOfGroups * numberOfLettersPerGroup
-
-    // retrive the candidate letters, calculate the frequency of each letter
-    // 1. get the specific config from LevelConfig by level
-    const config = levelConfig[level];
-    // 2. iterate each entiry of the config. Look up keybaordLayout. split the frequncy for each letters, assign result to a dict letter:frequncy
-    const lettersFrequency: { [key: string]: number } = {};
-    for (const c of config) {
-        const frequncyNotSplit: { [key: string]: number } = {}
-        for (const [key, value] of Object.entries(keyboardLayout)) {
-            if (
-                c.row === value.row &&
-                c.fingers.includes(value.finger) &&
-                c.hands.includes(value.hand) &&
-                (c.shift === 2 || c.shift === value.shift)
-            ) {
-                const frequency = c.frequency || 1;
-                frequncyNotSplit[key] = frequency;
-            }
-        }
-        // split frequncy and assign to lettersFrequency
-        const amplifier = 100
-        for (const [key, value] of Object.entries(frequncyNotSplit)) {
-            const frequency = value / Object.keys(frequncyNotSplit).length;
-            lettersFrequency[key] = Math.floor(frequency * amplifier);
-        }
-    }
-    // 3. generate letters randomly. the number of each letter has the propotion defined by the lettersFrequency.
-    const lettersPool: string[] = []
-    for (const [letter, frequency] of Object.entries(lettersFrequency)) {
-        const count = Math.floor(frequency * numberOfLetters)
-        for (let i = 0; i < count; i++) {
-            lettersPool.push(letter)
-        }
-    }
-    // console.log(lettersPool)
-
-    let retry = 10;
-    while (letters.length < numberOfLetters) {
-        const randomIndex = Math.floor(Math.random() * lettersPool.length)
-        const randomLetter = lettersPool[randomIndex]
-        // if letters size is greater than 2, skip if the previous 2 letters are the same of the current randomLetter
-        if (letters.length > 1 && letters[letters.length - 1] === letters[letters.length - 2] && letters[letters.length - 1] === randomLetter) {
-            if (retry-- > 0)
-                continue
-        }
-        letters.push(randomLetter)
-    }
-
-    return letters
-}
 
 const generateLetterGroups = (): LetterGroup[] => {
     // do something to reference props.regenerateCount to enforce invoke of this function
