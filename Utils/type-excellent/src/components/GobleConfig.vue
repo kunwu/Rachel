@@ -1,4 +1,6 @@
 <script lang="ts">
+import { defineComponent } from 'vue';
+
 type FingerInfo = {
     hand: "L" | "R" | "B";  // left, right, both
     finger: number;
@@ -150,4 +152,12 @@ export const levelConfig: LevelConfig = [
         { row: -1, fingers: [2, 3, 4], hands: ['L'], shift: 0 },
     ],
 ];
+
+export default defineComponent({
+    name: 'GlobalConfig',
+    setup() {
+
+    }
+});
+
 </script>
