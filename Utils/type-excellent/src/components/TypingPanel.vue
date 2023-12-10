@@ -193,11 +193,17 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
     }
     // console.log(lettersPool)
 
+    let retry = 10;
     while (letters.length < numberOfLetters) {
         const randomIndex = Math.floor(Math.random() * lettersPool.length)
         const randomLetter = lettersPool[randomIndex]
+        // if letters size is greater than 2, skip if the previous 2 letters are the same of the current randomLetter
+        if (letters.length > 1 && letters[letters.length - 1] === letters[letters.length - 2] && letters[letters.length - 1] === randomLetter) {
+            console.log('dup:', letters, randomLetter)
+            if (retry-- > 0)
+                continue
+        }
         letters.push(randomLetter)
-        lettersPool.splice(randomIndex, 1) // remove the selected letter from the pool
     }
 
     return letters
