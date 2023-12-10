@@ -6,6 +6,10 @@
                 <typing-panel :numberOfGroups="numberOfGroups" :numberOfLettersPerGroup="numberOfLettersPerGroup"
                     :level="level" :regenerateCount="regenerateCount" :showFinger="showFinger" :enableSound="enableSound"
                     @typingComplete="handleTypingComplete" style="border: solid 1px gray;"></typing-panel>
+                <!-- level indicator -->
+                <v-col cols="12" class="mt-5">
+                    <v-slider v-model="level" step="1" thumb-label="always" color="primary" :max="levelOptions.length - 1" label="Level"></v-slider>
+                </v-col>
                 <v-container>
                     <v-row>
                         <v-col cols="12">
