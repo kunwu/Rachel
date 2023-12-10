@@ -15,7 +15,7 @@
                                     <v-expansion-panel-text>
                                         <v-row>
                                             <v-col cols="3">
-                                                <v-select v-model="level" color="primary" :items="[0, 1, 2, 3, 4]"
+                                                <v-select v-model="level" color="primary" :items="levelOptions"
                                                     label="Level"></v-select>
                                             </v-col>
                                             <v-col cols="3">
@@ -62,6 +62,7 @@
 import { defineComponent, ref, nextTick } from 'vue'
 import TypingPanel from './TypingPanel.vue'
 import EvaluationPanel from './EvaluationPanel.vue'
+import { levelConfig } from './GobleConfig.vue'
 
 export default defineComponent({
     components: {
@@ -82,6 +83,7 @@ export default defineComponent({
         const regenerateCount = ref(0)
         // config panel
         const configPanel = ref(null)
+        const levelOptions = ref(Array.from({ length: levelConfig.length }, (_, i) => i));
 
         const handleTypingComplete = ({ lettersToType, lettersUserTyped }: { lettersToType: string[], lettersUserTyped: string[] }): void => {
             let countCorrect = 0
@@ -142,6 +144,7 @@ export default defineComponent({
             enableSound,
             regenerateCount,
             configPanel,
+            levelOptions,
             handleDialogOpen,
             handleDialogClose,
             handleTypingComplete

@@ -14,6 +14,7 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
+import { levelConfig } from './GobleConfig.vue';
 import typingSound from '@/assets/sounds/typing.mp3'
 import warningSound from '@/assets/sounds/warning.mp3'
 
@@ -259,31 +260,31 @@ const keyboardLayout: Record<string, FingerInfo> = {
 };
 
 // letter group generation
-type LevelConfig =
-    {
-        row: number, fingers: number[], hands: string[], shift: number, frequency?: number
-    }[][];
+// type LevelConfig =
+//     {
+//         row: number, fingers: number[], hands: string[], shift: number, frequency?: number
+//     }[][];
 
-const levelConfig: LevelConfig = [
-    [{ row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 }],
-    [
-        { row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 },
-        { row: 0, fingers: [0], hands: ['L', 'R'], shift: 0, frequency: 0.5 }
-    ],
-    [
-        { row: 0, fingers: [0, 1, 2, 3, 4], hands: ['L'], shift: 0 },
-        { row: 0, fingers: [1, 2, 3], hands: ['R'], shift: 0 }
-    ],
-    [{ row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 }],
-    [
-        { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
-        { row: 1, fingers: [1, 2], hands: ['L', 'R'], shift: 0 },
-    ],
-    [
-        { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 2 },
-        { row: 1, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
-    ],
-];
+// const levelConfig: LevelConfig = [
+//     [{ row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 }],
+//     [
+//         { row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 },
+//         { row: 0, fingers: [0], hands: ['L', 'R'], shift: 0, frequency: 0.5 }
+//     ],
+//     [
+//         { row: 0, fingers: [0, 1, 2, 3, 4], hands: ['L'], shift: 0 },
+//         { row: 0, fingers: [1, 2, 3], hands: ['R'], shift: 0 }
+//     ],
+//     [{ row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 }],
+//     [
+//         { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
+//         { row: 1, fingers: [1, 2], hands: ['L', 'R'], shift: 0 },
+//     ],
+//     [
+//         { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 2 },
+//         { row: 1, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
+//     ],
+// ];
 
 const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: number, level: number): string[] => {
     const letters: string[] = []
