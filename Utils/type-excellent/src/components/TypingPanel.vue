@@ -191,7 +191,7 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
             lettersPool.push(letter)
         }
     }
-    console.log(lettersPool)
+    // console.log(lettersPool)
 
     while (letters.length < numberOfLetters) {
         const randomIndex = Math.floor(Math.random() * lettersPool.length)
