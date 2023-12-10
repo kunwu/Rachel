@@ -15,11 +15,12 @@
                                     <v-expansion-panel-text>
                                         <v-row>
                                             <v-col cols="3">
-                                                <v-select v-model="level" color="primary" :items="[0, 1, 2, 3, 4]" label="Level"></v-select>
+                                                <v-select v-model="level" color="primary" :items="[0, 1, 2, 3, 4]"
+                                                    label="Level"></v-select>
                                             </v-col>
                                             <v-col cols="3">
-                                                <v-select v-model="numberOfGroups" color="primary" :items="[1, 2, 4, 10, 20]"
-                                                    label="Groups"></v-select>
+                                                <v-select v-model="numberOfGroups" color="primary"
+                                                    :items="[1, 2, 4, 10, 20]" label="Groups"></v-select>
                                             </v-col>
                                             <v-col cols="3">
                                                 <v-switch v-model="showFinger" color="primary" label="Finger"></v-switch>
