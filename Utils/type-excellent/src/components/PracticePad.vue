@@ -8,8 +8,14 @@
                     @typingComplete="handleTypingComplete" style="border: solid 1px gray;"></typing-panel>
                 <!-- level indicator -->
                 <v-col cols="12" class="mt-5">
-                    <v-slider v-model="level" step="1" thumb-label="always" color="primary" :max="levelOptions.length - 1" label="Level"></v-slider>
+                    <v-slider v-model="level" step="1" thumb-label="always" color="primary" :max="levelOptions.length - 1"
+                        label="Level"></v-slider>
                 </v-col>
+                <!-- regenerate button -->
+                <v-col cols="12" class="mt-0">
+                    <v-btn color="primary" @click="regenerateCount++">Regenerate</v-btn>
+                </v-col>
+                <!-- Configuration Box -->
                 <v-container>
                     <v-row>
                         <v-col cols="12">
