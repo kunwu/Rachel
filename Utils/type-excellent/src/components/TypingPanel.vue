@@ -14,7 +14,7 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
-import { levelConfig } from './GobleConfig.vue';
+import { keyboardLayout, levelConfig } from './GobleConfig.vue';
 import typingSound from '@/assets/sounds/typing.mp3'
 import warningSound from '@/assets/sounds/warning.mp3'
 
@@ -26,13 +26,6 @@ interface letterCell {
 interface LetterGroup {
     id: number
     letterCells: letterCell[]
-}
-
-interface FingerInfo {
-    hand: "L" | "R" | "B";  // left, right, both
-    finger: number;
-    row: number;
-    shift: 0 | 1 | 2;   // 0: no shift, 1: shift, 2: both
 }
 
 const props = defineProps({
@@ -161,131 +154,6 @@ onUnmounted(() => {
     window.removeEventListener('keypress', handleKeyPress);
 });
 
-// prepare the mapping of letters to fingers
-const keyboardLayout: Record<string, FingerInfo> = {
-    "`": { hand: "L", finger: 4, row: 2, shift: 0 },
-    "1": { hand: "L", finger: 4, row: 2, shift: 0 },
-    "2": { hand: "L", finger: 3, row: 2, shift: 0 },
-    "3": { hand: "L", finger: 2, row: 2, shift: 0 },
-    "4": { hand: "L", finger: 1, row: 2, shift: 0 },
-    "5": { hand: "L", finger: 0, row: 2, shift: 0 },
-    "6": { hand: "R", finger: 0, row: 2, shift: 0 },
-    "7": { hand: "R", finger: 1, row: 2, shift: 0 },
-    "8": { hand: "R", finger: 2, row: 2, shift: 0 },
-    "9": { hand: "R", finger: 3, row: 2, shift: 0 },
-    "0": { hand: "R", finger: 4, row: 2, shift: 0 },
-    "-": { hand: "R", finger: 4, row: 2, shift: 0 },
-    "=": { hand: "R", finger: 4, row: 2, shift: 0 },
-    "~": { hand: "L", finger: 4, row: 2, shift: 1 },
-    "!": { hand: "L", finger: 4, row: 2, shift: 1 },
-    "@": { hand: "L", finger: 3, row: 2, shift: 1 },
-    "#": { hand: "L", finger: 2, row: 2, shift: 1 },
-    "$": { hand: "L", finger: 1, row: 2, shift: 1 },
-    "%": { hand: "L", finger: 0, row: 2, shift: 1 },
-    "^": { hand: "R", finger: 0, row: 2, shift: 1 },
-    "&": { hand: "R", finger: 1, row: 2, shift: 1 },
-    "*": { hand: "R", finger: 2, row: 2, shift: 1 },
-    "(": { hand: "R", finger: 3, row: 2, shift: 1 },
-    ")": { hand: "R", finger: 4, row: 2, shift: 1 },
-    "_": { hand: "R", finger: 4, row: 2, shift: 1 },
-    "+": { hand: "R", finger: 4, row: 2, shift: 1 },
-    "q": { hand: "L", finger: 4, row: 1, shift: 0 },
-    "w": { hand: "L", finger: 3, row: 1, shift: 0 },
-    "e": { hand: "L", finger: 2, row: 1, shift: 0 },
-    "r": { hand: "L", finger: 1, row: 1, shift: 0 },
-    "t": { hand: "L", finger: 0, row: 1, shift: 0 },
-    "y": { hand: "R", finger: 0, row: 1, shift: 0 },
-    "u": { hand: "R", finger: 1, row: 1, shift: 0 },
-    "i": { hand: "R", finger: 2, row: 1, shift: 0 },
-    "o": { hand: "R", finger: 3, row: 1, shift: 0 },
-    "p": { hand: "R", finger: 4, row: 1, shift: 0 },
-    "[": { hand: "R", finger: 4, row: 1, shift: 0 },
-    "]": { hand: "R", finger: 4, row: 1, shift: 0 },
-    "\\": { hand: "R", finger: 4, row: 1, shift: 0 },
-    "Q": { hand: "L", finger: 4, row: 1, shift: 1 },
-    "W": { hand: "L", finger: 3, row: 1, shift: 1 },
-    "E": { hand: "L", finger: 2, row: 1, shift: 1 },
-    "R": { hand: "L", finger: 1, row: 1, shift: 1 },
-    "T": { hand: "L", finger: 0, row: 1, shift: 1 },
-    "Y": { hand: "R", finger: 0, row: 1, shift: 1 },
-    "U": { hand: "R", finger: 1, row: 1, shift: 1 },
-    "I": { hand: "R", finger: 2, row: 1, shift: 1 },
-    "O": { hand: "R", finger: 3, row: 1, shift: 1 },
-    "P": { hand: "R", finger: 4, row: 1, shift: 1 },
-    "{": { hand: "R", finger: 4, row: 1, shift: 1 },
-    "}": { hand: "R", finger: 4, row: 1, shift: 1 },
-    "|": { hand: "R", finger: 4, row: 1, shift: 1 },
-    "a": { hand: "L", finger: 4, row: 0, shift: 0 },
-    "s": { hand: "L", finger: 3, row: 0, shift: 0 },
-    "d": { hand: "L", finger: 2, row: 0, shift: 0 },
-    "f": { hand: "L", finger: 1, row: 0, shift: 0 },
-    "g": { hand: "L", finger: 0, row: 0, shift: 0 },
-    "h": { hand: "R", finger: 0, row: 0, shift: 0 },
-    "j": { hand: "R", finger: 1, row: 0, shift: 0 },
-    "k": { hand: "R", finger: 2, row: 0, shift: 0 },
-    "l": { hand: "R", finger: 3, row: 0, shift: 0 },
-    ";": { hand: "R", finger: 4, row: 0, shift: 0 },
-    "'": { hand: "R", finger: 4, row: 0, shift: 0 },
-    "A": { hand: "L", finger: 4, row: 0, shift: 1 },
-    "S": { hand: "L", finger: 3, row: 0, shift: 1 },
-    "D": { hand: "L", finger: 2, row: 0, shift: 1 },
-    "F": { hand: "L", finger: 1, row: 0, shift: 1 },
-    "G": { hand: "L", finger: 0, row: 0, shift: 1 },
-    "H": { hand: "R", finger: 0, row: 0, shift: 1 },
-    "J": { hand: "R", finger: 1, row: 0, shift: 1 },
-    "K": { hand: "R", finger: 2, row: 0, shift: 1 },
-    "L": { hand: "R", finger: 3, row: 0, shift: 1 },
-    ":": { hand: "R", finger: 4, row: 0, shift: 1 },
-    "\"": { hand: "R", finger: 4, row: 0, shift: 1 },
-    "z": { hand: "L", finger: 4, row: -1, shift: 0 },
-    "x": { hand: "L", finger: 3, row: -1, shift: 0 },
-    "c": { hand: "L", finger: 2, row: -1, shift: 0 },
-    "v": { hand: "L", finger: 1, row: -1, shift: 0 },
-    "b": { hand: "L", finger: 0, row: -1, shift: 0 },
-    "n": { hand: "R", finger: 0, row: -1, shift: 0 },
-    "m": { hand: "R", finger: 1, row: -1, shift: 0 },
-    ",": { hand: "R", finger: 2, row: -1, shift: 0 },
-    ".": { hand: "R", finger: 3, row: -1, shift: 0 },
-    "/": { hand: "R", finger: 4, row: -1, shift: 0 },
-    "Z": { hand: "L", finger: 4, row: -1, shift: 1 },
-    "X": { hand: "L", finger: 3, row: -1, shift: 1 },
-    "C": { hand: "L", finger: 2, row: -1, shift: 1 },
-    "V": { hand: "L", finger: 1, row: -1, shift: 1 },
-    "B": { hand: "L", finger: 0, row: -1, shift: 1 },
-    "N": { hand: "R", finger: 0, row: -1, shift: 1 },
-    "M": { hand: "R", finger: 1, row: -1, shift: 1 },
-    "<": { hand: "R", finger: 2, row: -1, shift: 1 },
-    ">": { hand: "R", finger: 3, row: -1, shift: 1 },
-    "?": { hand: "R", finger: 4, row: -1, shift: 1 },
-};
-
-// letter group generation
-// type LevelConfig =
-//     {
-//         row: number, fingers: number[], hands: string[], shift: number, frequency?: number
-//     }[][];
-
-// const levelConfig: LevelConfig = [
-//     [{ row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 }],
-//     [
-//         { row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 },
-//         { row: 0, fingers: [0], hands: ['L', 'R'], shift: 0, frequency: 0.5 }
-//     ],
-//     [
-//         { row: 0, fingers: [0, 1, 2, 3, 4], hands: ['L'], shift: 0 },
-//         { row: 0, fingers: [1, 2, 3], hands: ['R'], shift: 0 }
-//     ],
-//     [{ row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 }],
-//     [
-//         { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
-//         { row: 1, fingers: [1, 2], hands: ['L', 'R'], shift: 0 },
-//     ],
-//     [
-//         { row: 0, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 2 },
-//         { row: 1, fingers: [1, 2, 3, 4], hands: ['L', 'R'], shift: 0 },
-//     ],
-// ];
-
 const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: number, level: number): string[] => {
     const letters: string[] = []
     const numberOfLetters = numberOfGroups * numberOfLettersPerGroup
@@ -309,9 +177,10 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
             }
         }
         // split frequncy and assign to lettersFrequency
+        const amplifier = 100
         for (const [key, value] of Object.entries(frequncyNotSplit)) {
             const frequency = value / Object.keys(frequncyNotSplit).length;
-            lettersFrequency[key] = frequency;
+            lettersFrequency[key] = Math.floor(frequency * amplifier);
         }
     }
     // 3. generate letters randomly. the number of each letter has the propotion defined by the lettersFrequency.
@@ -322,12 +191,15 @@ const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: nu
             lettersPool.push(letter)
         }
     }
+    console.log(lettersPool)
+
     while (letters.length < numberOfLetters) {
         const randomIndex = Math.floor(Math.random() * lettersPool.length)
         const randomLetter = lettersPool[randomIndex]
         letters.push(randomLetter)
         lettersPool.splice(randomIndex, 1) // remove the selected letter from the pool
     }
+
     return letters
 }
 
