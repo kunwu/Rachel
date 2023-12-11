@@ -56,14 +56,22 @@
                 <!-- Dialog -->
                 <v-row>
                     <v-col cols="12">
-                        <v-dialog v-model="dialogVisible" @open="handleDialogOpen" @close="handleDialogClose"
-                            max-width="500px">
+                        <v-dialog v-model="dialogVisible" :hide-overlay="true" :persistent="true" max-width="30%">
                             <v-card>
                                 <v-card-text>
-                                    <div v-html="dialogContent"></div>
+                                    <v-row>
+                                        <v-col cols="3">
+                                            <v-progress-circular v-if="dialogCountDown >= 0" :size="70" :width="7"
+                                                :model-value="dialogCountDown * (100 / (dialogCountDownSeconds * 10))"
+                                                color="primary"></v-progress-circular>
+                                        </v-col>
+                                        <v-col cols="9">
+                                            <div v-html="dialogContent"></div>
+                                        </v-col>
+                                    </v-row>
                                 </v-card-text>
                                 <v-card-actions>
-                                    <v-btn color="primary" @click="dialogVisible = true">Close</v-btn>
+                                    <v-btn color="primary" @click="dialogVisible = false">Close</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
@@ -87,13 +95,16 @@ export default defineComponent({
     },
     setup() {
         // dialog
+        const dialogCountDownSeconds = 4
         const dialogVisible = ref(false)
         const dialogContent = ref('')
+        const dialogCountDown = ref(dialogCountDownSeconds * 10)
         // params
         const numberOfGroups = ref(4)
         const numberOfLettersPerGroup = ref(4)
         const level = ref(1)
         const levelForFrequency = ref(0)
+        let levelAdjustedTemp = levelForFrequency.value
         const showFinger = ref(true)
         const enableSound = ref(true)
         // regenerate control
@@ -128,31 +139,15 @@ export default defineComponent({
             }
             msg = "<p>" + msg + "</p>"
 
-            const levelAdjust = adjustLevelByFeedback(levelForFrequency.value, lettersToType, lettersUserTyped)
-            if (levelAdjust > levelForFrequency.value) {
-                levelForFrequency.value = levelAdjust
+            levelAdjustedTemp = adjustLevelByFeedback(levelForFrequency.value, lettersToType, lettersUserTyped)
+            if (levelAdjustedTemp > levelForFrequency.value) {
+
                 msg += '<p><b>BTW: Your level is upgraded!</b></p>'
             }
 
             dialogContent.value = `You typed ${countCorrect} out of ${total} correctly.` + '<br/>' + msg
+            dialogCountDown.value = dialogCountDownSeconds * 10
             dialogVisible.value = true
-            handleDialogOpen()
-        }
-
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Enter' && dialogVisible.value) {
-                handleDialogClose()
-            }
-        }
-
-        const handleDialogOpen = async () => {
-            window.addEventListener('keydown', handleKeyDown)
-        }
-
-        const handleDialogClose = (): void => {
-            dialogVisible.value = false
-            regenerateLetterGroups()
-            window.removeEventListener('keydown', handleKeyDown)
         }
 
         const regenerateLetterGroups = (): void => {
@@ -164,17 +159,37 @@ export default defineComponent({
             localStorage.setItem('levelForFrequency', levelForFrequency.value.toString())
         }
 
+        watch(dialogVisible, (newValue) => {
+            if (newValue) {
+                const intervalId = setInterval(() => {
+                    if (dialogCountDown.value > 1) {
+                        dialogCountDown.value--
+                    } else {
+                        dialogVisible.value = false
+                        clearInterval(intervalId)
+                        if (levelAdjustedTemp > levelForFrequency.value) {
+                            levelForFrequency.value = levelAdjustedTemp
+                        }
+                        regenerateLetterGroups()
+                    }
+                }, 100);
+            }
+        });
+
         watch(numberOfGroups, saveToLocalStorage);
         watch(levelForFrequency, saveToLocalStorage);
 
         onMounted(() => {
             numberOfGroups.value = localStorage.getItem('numberOfGroups') ? parseInt(localStorage.getItem('numberOfGroups')!) : 4
             levelForFrequency.value = localStorage.getItem('levelForFrequency') ? parseInt(localStorage.getItem('levelForFrequency')!) : 0
+            levelAdjustedTemp = levelForFrequency.value
         });
 
         return {
             dialogVisible,
             dialogContent,
+            dialogCountDownSeconds,
+            dialogCountDown,
             numberOfGroups,
             numberOfLettersPerGroup,
             level,
@@ -185,8 +200,6 @@ export default defineComponent({
             configPanel,
             levelOptions,
             levelGroupsForFrequencyOptions,
-            handleDialogOpen,
-            handleDialogClose,
             handleTypingComplete
         }
     }
