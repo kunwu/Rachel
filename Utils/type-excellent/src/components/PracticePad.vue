@@ -161,7 +161,7 @@ export default defineComponent({
             localStorage.setItem('levelForFrequency', levelForFrequency.value.toString())
         }
 
-        let intervalId = 0
+        let intervalId: any = 0
         watch(dialogVisible, (newValue) => {
             if (newValue) {
                 intervalId = setInterval(() => {
