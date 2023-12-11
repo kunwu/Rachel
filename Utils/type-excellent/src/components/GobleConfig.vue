@@ -189,9 +189,10 @@ export const generateLetterArrayByFeedback = (numberOfLetters: number, levelCurr
         }
     }
 
+    // DEBUG
     // print out to console.log the frequency of each letter in decreasing order, print in lines
-    const sortedLetters = Object.entries(rawLetterFrequency).sort((a, b) => b[1] - a[1]);
-    console.log(sortedLetters.map(([letter, frequency]) => `${letter}: ${frequency}`).join('\n'));
+    // const sortedLetters = Object.entries(rawLetterFrequency).sort((a, b) => b[1] - a[1]);
+    // // console.log(sortedLetters.map(([letter, frequency]) => `${letter}: ${frequency}`).join('\n'));
 
     const letters: string[] = generateLetterArrayByFrequency(rawLetterFrequency, numberOfLetters);
     return letters;

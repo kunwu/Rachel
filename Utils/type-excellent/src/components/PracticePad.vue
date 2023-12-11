@@ -10,7 +10,7 @@
                 <!-- level for frequency -->
                 <v-col cols="12" class="mt-10">
                     <v-slider v-model="levelForFrequency" step="1" thumb-label="always" color="primary"
-                        :max="levelGroupsForFrequencyOptions.length - 1" label="LevelbyAI"></v-slider>
+                        :max="levelGroupsForFrequencyOptions.length - 1" label="Level@AI"></v-slider>
                 </v-col>
                 <!-- level indicator -->
                 <!-- <v-col cols="12" class="mt-5">
@@ -60,17 +60,17 @@
                             <v-card>
                                 <v-card-text>
                                     <v-row>
-                                        <v-col cols="3">
-                                            <v-progress-circular v-if="dialogCountDown >= 0" :size="70" :width="7"
-                                                :model-value="dialogCountDown * (100 / (dialogCountDownSeconds * 10))"
+                                        <v-col cols="2">
+                                            <v-progress-circular v-if="dialogCountDown >= 0" :size="60" :width="7"
+                                                :model-value="dialogCountDown * (100 / (dialogCountDownSeconds * (1000 / dialogCountDownInterval)))"
                                                 color="primary"></v-progress-circular>
                                         </v-col>
-                                        <v-col cols="9">
+                                        <v-col cols="10">
                                             <div v-html="dialogContent"></div>
                                         </v-col>
                                     </v-row>
                                 </v-card-text>
-                                <v-card-actions>
+                                <v-card-actions class="justify-end">
                                     <v-btn color="primary" @click="dialogVisible = false">Close</v-btn>
                                 </v-card-actions>
                             </v-card>
@@ -96,9 +96,10 @@ export default defineComponent({
     setup() {
         // dialog
         const dialogCountDownSeconds = 4
+        const dialogCountDownInterval = 100
         const dialogVisible = ref(false)
         const dialogContent = ref('')
-        const dialogCountDown = ref(dialogCountDownSeconds * 10)
+        const dialogCountDown = ref(dialogCountDownSeconds * (1000 / dialogCountDownInterval))    // 为了让进度条能够显示完整
         // params
         const numberOfGroups = ref(4)
         const numberOfLettersPerGroup = ref(4)
@@ -146,7 +147,7 @@ export default defineComponent({
             }
 
             dialogContent.value = `You typed ${countCorrect} out of ${total} correctly.` + '<br/>' + msg
-            dialogCountDown.value = dialogCountDownSeconds * 10
+            dialogCountDown.value = dialogCountDownSeconds * (1000 / dialogCountDownInterval)
             dialogVisible.value = true
         }
 
@@ -188,6 +189,7 @@ export default defineComponent({
         return {
             dialogVisible,
             dialogContent,
+            dialogCountDownInterval,
             dialogCountDownSeconds,
             dialogCountDown,
             numberOfGroups,
