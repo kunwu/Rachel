@@ -114,6 +114,89 @@ export const keyboardLayout: Record<string, FingerInfo> = {
     "?": { hand: "R", finger: 4, row: -1, shift: 1 },
 };
 
+export const levelGroupsForFrequency = [
+    ['f', 'j'],
+    ['g', 'h'],
+    ['d', 's', 'k', 'l', 'a'],
+    ['r', 'u'],
+    ['t', 'y'],
+    ['v', 'b', 'n', 'm'],
+    ['e', 'i'],
+    ['w', 'o'],
+    ['q', 'p'],
+    ['c', 'x', 'z'],
+    [',', '.', '\'', '!'],
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':'],
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+    ['+', '-', '*', '/', '=', '>', '<', '"', '?', '(', ')', '[', ']'],
+    ['@', '#', '$', '%'],
+    ['^', '&', '_', '|', '~', '\\', '{', '}']
+];
+
+export const adjustLevelByFeedback = (levelCurrent: number, lastLettersToType: string[], lastUserTyped: string[]): number => {
+    let levelRet = levelCurrent;
+    if (levelRet >= levelGroupsForFrequency.length) {
+        return levelRet;
+    }
+
+    const falseCount: { [key: string]: number } = {}
+    for (let i = 0; i < lastUserTyped.length; i++) {
+        const letter = lastLettersToType[i];
+        const typed = lastUserTyped[i];
+        if (letter !== typed) {
+            falseCount[letter] = (falseCount[letter] || 0) + 1;
+        }
+    }
+
+    if ((lastUserTyped.length === lastLettersToType.length) && (Object.keys(falseCount).length === 0)) {
+        levelRet = levelCurrent + 1;
+    }
+
+    return levelRet;
+}
+
+export const generateLetterArrayByFeedback = (numberOfLetters: number, levelCurrent: number, lastLettersToType: string[], lastUserTyped: string[]): string[] => {
+    const FrequencyCurrent = 1000   // 当前组权重
+    const FrequencyAdjust = 0.8    // 前一组权重比例
+    const FalseThreshold = 2      // 错误阈值，超过阈值才提高权重
+    const FalseAjust = 1.5          // 错误权重比例
+
+    // 计算初始化权重
+    const rawLetterFrequency: { [key: string]: number } = {};
+    // 当前组直到第一组
+    for (let i = levelCurrent; i >= 0; i--) {
+        const letters = levelGroupsForFrequency[i];
+        const frequency = FrequencyCurrent * Math.pow(FrequencyAdjust, levelCurrent - i);
+        for (const letter of letters) {
+            rawLetterFrequency[letter] = frequency;
+        }
+    }
+    // 上轮错误字母的权限
+    const falseCount: { [key: string]: number } = {}
+    for (let i = 0; i < lastUserTyped.length; i++) {
+        const letter = lastLettersToType[i];
+        const typed = lastUserTyped[i];
+        if (letter !== typed) {
+            falseCount[letter] = (falseCount[letter] || 0) + 1;
+        }
+    }
+    // 根据错误字母调整权重
+    for (const [letter, count] of Object.entries(falseCount)) {
+        if (count >= FalseThreshold) {
+            rawLetterFrequency[letter] = FrequencyCurrent + FalseAjust;
+        }
+    }
+
+    // print out to console.log the frequency of each letter in decreasing order, print in lines
+    const sortedLetters = Object.entries(rawLetterFrequency).sort((a, b) => b[1] - a[1]);
+    console.log(sortedLetters.map(([letter, frequency]) => `${letter}: ${frequency}`).join('\n'));
+
+    const letters: string[] = generateLetterArrayByFrequency(rawLetterFrequency, numberOfLetters);
+    return letters;
+}
+
 export const levelConfig: LevelConfig = [
     [
         { row: 0, fingers: [1], hands: ['L', 'R'], shift: 0 },
@@ -154,7 +237,6 @@ export const levelConfig: LevelConfig = [
 ];
 
 export const generateLetterArray = (numberOfGroups: number, numberOfLettersPerGroup: number, level: number): string[] => {
-    const letters: string[] = []
     const numberOfLetters = numberOfGroups * numberOfLettersPerGroup
 
     return generateLetterArrayByPredefinedLevel(level, numberOfLetters);
@@ -187,11 +269,13 @@ const generateLetterArrayByPredefinedLevel = (level: number, numberOfLetters: nu
         }
     }
 
-    const lettersPool: string[] = [];
+    return generateLetterArrayByFrequency(lettersFrequency, numberOfLetters);
+};
 
+const generateLetterArrayByFrequency = (lettersFrequency: { [key: string]: number }, numberOfLetters: number): string[] => {
+    const lettersPool: string[] = [];
     for (const [letter, frequency] of Object.entries(lettersFrequency)) {
         const count = Math.floor(frequency * numberOfLetters);
-
         for (let i = 0; i < count; i++) {
             lettersPool.push(letter);
         }
@@ -199,7 +283,6 @@ const generateLetterArrayByPredefinedLevel = (level: number, numberOfLetters: nu
 
     const letters: string[] = [];
     let retry = 10;
-
     while (letters.length < numberOfLetters) {
         const randomIndex = Math.floor(Math.random() * lettersPool.length);
         const randomLetter = lettersPool[randomIndex];
@@ -212,9 +295,8 @@ const generateLetterArrayByPredefinedLevel = (level: number, numberOfLetters: nu
 
         letters.push(randomLetter);
     }
-
-    return letters;
-};
+    return letters
+}
 
 export default defineComponent({
     name: 'GlobalConfig',

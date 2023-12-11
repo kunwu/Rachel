@@ -4,17 +4,19 @@
             <v-container style="border: solid 1px yellow;">
                 <!-- Typing Panel -->
                 <typing-panel :numberOfGroups="numberOfGroups" :numberOfLettersPerGroup="numberOfLettersPerGroup"
-                    :level="level" :regenerateCount="regenerateCount" :showFinger="showFinger" :enableSound="enableSound"
-                    @typingComplete="handleTypingComplete" style="border: solid 1px gray;"></typing-panel>
+                    :level="level" :levelForFrequency="levelForFrequency" :regenerateCount="regenerateCount"
+                    :showFinger="showFinger" :enableSound="enableSound" @typingComplete="handleTypingComplete"
+                    style="border: solid 1px gray;"></typing-panel>
+                <!-- level for frequency -->
+                <v-col cols="12" class="mt-10">
+                    <v-slider v-model="levelForFrequency" step="1" thumb-label="always" color="primary"
+                        :max="levelGroupsForFrequencyOptions.length - 1" label="LevelbyAI"></v-slider>
+                </v-col>
                 <!-- level indicator -->
-                <v-col cols="12" class="mt-5">
+                <!-- <v-col cols="12" class="mt-5">
                     <v-slider v-model="level" step="1" thumb-label="always" color="primary" :max="levelOptions.length - 1"
                         label="Level"></v-slider>
-                </v-col>
-                <!-- regenerate button -->
-                <v-col cols="12" class="mt-0">
-                    <v-btn color="primary" @click="regenerateCount++">Regenerate</v-btn>
-                </v-col>
+                </v-col> -->
                 <!-- Configuration Box -->
                 <v-container>
                     <v-row>
@@ -24,10 +26,10 @@
                                     <v-expansion-panel-title>Configuration</v-expansion-panel-title>
                                     <v-expansion-panel-text>
                                         <v-row>
-                                            <v-col cols="3">
+                                            <!-- <v-col cols="3">
                                                 <v-select v-model="level" color="primary" :items="levelOptions"
                                                     label="Level"></v-select>
-                                            </v-col>
+                                            </v-col> -->
                                             <v-col cols="3">
                                                 <v-select v-model="numberOfGroups" color="primary"
                                                     :items="[1, 2, 4, 10, 20]" label="Groups"></v-select>
@@ -37,6 +39,10 @@
                                             </v-col>
                                             <v-col cols="3">
                                                 <v-switch v-model="enableSound" color="primary" label="Sound"></v-switch>
+                                            </v-col>
+                                            <!-- regenerate button -->
+                                            <v-col cols="3">
+                                                <v-btn color="primary" @click="regenerateCount++">Regenerate</v-btn>
                                             </v-col>
                                         </v-row>
                                     </v-expansion-panel-text>
@@ -54,7 +60,7 @@
                             max-width="500px">
                             <v-card>
                                 <v-card-text>
-                                    {{ dialogContent }}
+                                    <div v-html="dialogContent"></div>
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-btn color="primary" @click="dialogVisible = true">Close</v-btn>
@@ -69,10 +75,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick } from 'vue'
+import { defineComponent, ref, onMounted, watch } from 'vue'
 import TypingPanel from './TypingPanel.vue'
 import EvaluationPanel from './EvaluationPanel.vue'
-import { levelConfig } from './GobleConfig.vue'
+import { levelConfig, levelGroupsForFrequency, adjustLevelByFeedback } from './GobleConfig.vue'
 
 export default defineComponent({
     components: {
@@ -84,9 +90,10 @@ export default defineComponent({
         const dialogVisible = ref(false)
         const dialogContent = ref('')
         // params
-        const numberOfGroups = ref(2)
+        const numberOfGroups = ref(4)
         const numberOfLettersPerGroup = ref(4)
         const level = ref(1)
+        const levelForFrequency = ref(0)
         const showFinger = ref(true)
         const enableSound = ref(true)
         // regenerate control
@@ -94,6 +101,7 @@ export default defineComponent({
         // config panel
         const configPanel = ref(null)
         const levelOptions = ref(Array.from({ length: levelConfig.length }, (_, i) => i));
+        const levelGroupsForFrequencyOptions = ref(Array.from({ length: levelGroupsForFrequency.length }, (_, i) => i));
 
         const handleTypingComplete = ({ lettersToType, lettersUserTyped }: { lettersToType: string[], lettersUserTyped: string[] }): void => {
             let countCorrect = 0
@@ -116,10 +124,17 @@ export default defineComponent({
             } else if (countCorrect / total >= 0.2) {
                 msg = 'I like your spirit. Keep going.'
             } else {
-                msg = 'Good start. Let\'s prace more.'
+                msg = 'Good start. Let\'s practice more.'
+            }
+            msg = "<p>" + msg + "</p>"
+
+            const levelAdjust = adjustLevelByFeedback(levelForFrequency.value, lettersToType, lettersUserTyped)
+            if (levelAdjust > levelForFrequency.value) {
+                levelForFrequency.value = levelAdjust
+                msg += '<p><b>BTW: Your level is upgraded!</b></p>'
             }
 
-            dialogContent.value = `You typed ${countCorrect} out of ${total} correctly.` + ' ' + msg
+            dialogContent.value = `You typed ${countCorrect} out of ${total} correctly.` + '<br/>' + msg
             dialogVisible.value = true
             handleDialogOpen()
         }
@@ -144,17 +159,32 @@ export default defineComponent({
             regenerateCount.value++
         }
 
+        const saveToLocalStorage = (): void => {
+            localStorage.setItem('numberOfGroups', numberOfGroups.value.toString())
+            localStorage.setItem('levelForFrequency', levelForFrequency.value.toString())
+        }
+
+        watch(numberOfGroups, saveToLocalStorage);
+        watch(levelForFrequency, saveToLocalStorage);
+
+        onMounted(() => {
+            numberOfGroups.value = localStorage.getItem('numberOfGroups') ? parseInt(localStorage.getItem('numberOfGroups')!) : 4
+            levelForFrequency.value = localStorage.getItem('levelForFrequency') ? parseInt(localStorage.getItem('levelForFrequency')!) : 0
+        });
+
         return {
             dialogVisible,
             dialogContent,
             numberOfGroups,
             numberOfLettersPerGroup,
             level,
+            levelForFrequency,
             showFinger,
             enableSound,
             regenerateCount,
             configPanel,
             levelOptions,
+            levelGroupsForFrequencyOptions,
             handleDialogOpen,
             handleDialogClose,
             handleTypingComplete

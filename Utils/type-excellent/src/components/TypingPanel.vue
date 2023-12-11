@@ -14,7 +14,7 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
-import { keyboardLayout, generateLetterArray } from './GobleConfig.vue';
+import { keyboardLayout, generateLetterArray, generateLetterArrayByFeedback } from './GobleConfig.vue';
 import typingSound from '@/assets/sounds/typing.mp3'
 import warningSound from '@/assets/sounds/warning.mp3'
 
@@ -38,6 +38,10 @@ const props = defineProps({
         required: true
     },
     level: {
+        type: Number,
+        required: true
+    },
+    levelForFrequency: {
         type: Number,
         required: true
     },
@@ -160,7 +164,8 @@ const generateLetterGroups = (): LetterGroup[] => {
         console.log('something unexpected happen')
     }
 
-    const lettersGenerated = generateLetterArray(props.numberOfGroups, props.numberOfLettersPerGroup, props.level)
+    // const lettersGenerated = generateLetterArray(props.numberOfGroups, props.numberOfLettersPerGroup, props.level)
+    const lettersGenerated = generateLetterArrayByFeedback(props.numberOfGroups * props.numberOfLettersPerGroup, props.levelForFrequency, lettersToType.value, lettersUserTyped.value)
     // reset letterToType and lettersUserTyped
     lettersToType.value = []
     lettersUserTyped.value = []
