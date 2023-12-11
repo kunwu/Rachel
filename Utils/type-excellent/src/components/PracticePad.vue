@@ -56,7 +56,8 @@
                 <!-- Dialog -->
                 <v-row>
                     <v-col cols="12">
-                        <v-dialog v-model="dialogVisible" :hide-overlay="true" :persistent="true" max-width="30%">
+                        <v-dialog v-model="dialogVisible" :hide-overlay="true" :persistent="true" max-width="30%"
+                            @click:close="handleDialogClose">
                             <v-card>
                                 <v-card-text>
                                     <v-row>
@@ -71,7 +72,7 @@
                                     </v-row>
                                 </v-card-text>
                                 <v-card-actions class="justify-end">
-                                    <v-btn color="primary" @click="dialogVisible = false">Close</v-btn>
+                                    <v-btn color="primary" @click="handleDialogClose">Close</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
@@ -106,7 +107,7 @@ export default defineComponent({
         const level = ref(1)
         const levelForFrequency = ref(0)
         let levelAdjustedTemp = levelForFrequency.value
-        const showFinger = ref(true)
+        const showFinger = ref(false)
         const enableSound = ref(true)
         // regenerate control
         const regenerateCount = ref(0)
@@ -160,22 +161,30 @@ export default defineComponent({
             localStorage.setItem('levelForFrequency', levelForFrequency.value.toString())
         }
 
+        let intervalId = 0
         watch(dialogVisible, (newValue) => {
             if (newValue) {
-                const intervalId = setInterval(() => {
+                intervalId = setInterval(() => {
                     if (dialogCountDown.value > 1) {
                         dialogCountDown.value--
                     } else {
-                        dialogVisible.value = false
-                        clearInterval(intervalId)
-                        if (levelAdjustedTemp > levelForFrequency.value) {
-                            levelForFrequency.value = levelAdjustedTemp
-                        }
-                        regenerateLetterGroups()
+                        handleDialogClose()
                     }
                 }, 100);
             }
         });
+
+        const handleDialogClose = (): void => {
+            dialogVisible.value = false;
+            if (intervalId) {
+                clearInterval(intervalId)
+                intervalId = 0
+            }
+            if (levelAdjustedTemp !== levelForFrequency.value) {
+                levelForFrequency.value = levelAdjustedTemp
+            }
+            regenerateLetterGroups()
+        }
 
         watch(numberOfGroups, saveToLocalStorage);
         watch(levelForFrequency, saveToLocalStorage);
@@ -202,7 +211,8 @@ export default defineComponent({
             configPanel,
             levelOptions,
             levelGroupsForFrequencyOptions,
-            handleTypingComplete
+            handleTypingComplete,
+            handleDialogClose
         }
     }
 })
