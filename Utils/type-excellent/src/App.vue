@@ -8,7 +8,7 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-list>
         <v-list-group>
-          <v-list-item v-for="route in menuRoutes" :key="route.name" link :to="route.path">
+          <v-list-item v-for="route in menuRoutes" :key="route.name" link :to="route.path" @click="drawer = false">
             <v-list-item-title>{{ route.meta.displayText }}</v-list-item-title>
           </v-list-item>
         </v-list-group>
