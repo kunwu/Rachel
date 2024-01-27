@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from scipy.spatial import ConvexHull
 
 # Define cube vertices
 vertices = np.array([[0, 0, 0],
@@ -11,7 +10,7 @@ vertices = np.array([[0, 0, 0],
                      [1, 0, 0],
                      [1, 0, 1],
                      [1, 1, 0],
-                     [1, 1, 1]])
+                     [1, 1, 1]]) * 100
 
 # Define cube edges
 edges = [[0, 1], [0, 2], [0, 4],
@@ -23,9 +22,9 @@ edges = [[0, 1], [0, 2], [0, 4],
          [6, 7]]
 
 # Define three points on the plane (modify these points according to your desired plane)
-point1 = np.array([1, 0.5, 1])
-point2 = np.array([0.5, 1, 1])
-point3 = np.array([1, 0, 0.5])
+point1 = np.array([100, 50, 100])
+point2 = np.array([50, 100, 100])
+point3 = np.array([100, 0, 50])
 
 # Calculate the normal vector to the plane
 normal_vector = np.cross(point2 - point1, point3 - point1)
@@ -94,37 +93,35 @@ z_coords = (-d - a * x_coords - b * y_coords) / c  # Use plane equation to calcu
 # Plot the plane as a surface
 ax.plot_surface(x_coords, y_coords, z_coords, alpha=0.3)
 
-# Plot the intersection points
-# for i, point in enumerate(intersections):
-#     ax.scatter(point[0], point[1], point[2], color='red')
-#     ax.text(point[0], point[1], point[2], f"i{i+1}", color='red')
-
 # Plot cut face
 face = Poly3DCollection([intersections], alpha=0.2, linewidths=1, edgecolors='k')
 face.set_facecolor('lightblue')
 ax.add_collection3d(face)
 
 ax.text(point1[0], point1[1], point1[2], 'p1', color='red')
-ax.text(point2[0], point2[1], point2[2], 'p2', color='blue')
-ax.text(point3[0], point3[1], point3[2], 'p3', color='green')
+ax.text(point2[0], point2[1], point2[2], 'p2', color='green')
+ax.text(point3[0], point3[1], point3[2], 'p3', color='blue')
 
 # Set plot limits and labels
-ax.set_xlim([-0.2, 1.2])
-ax.set_ylim([-0.2, 1.2])
-ax.set_zlim([-0.2, 1.2])
+ax.set_xlim([0, 1 * 100])
+ax.set_ylim([0, 1 * 100])
+ax.set_zlim([0, 1 * 100])
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 
 # Emphasize the origin point
-ax.scatter3D(0, 0, 0, color='red', s=50)
+ax.scatter3D(0, 0, 0, color='#991100', s=50)
 
 # Add arrows to each axis
-arrow_length = 1  # Decrease this to make the arrow head appear smaller
-arrow_linewidth = 1  # Increase this to make the arrow head appear smaller
-ax.quiver(0, 0, 0, arrow_length, 0, 0, color='black', linewidth=arrow_linewidth)
-ax.quiver(0, 0, 0, 0, arrow_length, 0, color='black', linewidth=arrow_linewidth)
-ax.quiver(0, 0, 0, 0, 0, arrow_length, color='black', linewidth=arrow_linewidth)
+arrow_length = 18  # Decrease this to make the arrow head appear smaller
+arrow_linewidth = 1.5  # Increase this to make the arrow head appear smaller
+ax.quiver(0, 0, 0, arrow_length, 0, 0, color='#991100', linewidth=arrow_linewidth)
+ax.quiver(0, 0, 0, 0, arrow_length, 0, color='#991100', linewidth=arrow_linewidth)
+ax.quiver(0, 0, 0, 0, 0, arrow_length, color='#991100', linewidth=arrow_linewidth)
+ax.text(18, 0, 0, 'X', color='#991100', fontweight='bold')
+ax.text(0, 18, 0, 'Y', color='#991100', fontweight='bold')
+ax.text(0, 0, 18, 'Z', color='#991100', fontweight='bold')
 
 # Show the plot
 plt.show()
