@@ -22,9 +22,13 @@ edges = [[0, 1], [0, 2], [0, 4],
          [6, 7]]
 
 # Define three points on the plane (modify these points according to your desired plane)
-point1 = np.array([100, 50, 100])
-point2 = np.array([50, 100, 100])
-point3 = np.array([100, 0, 50])
+point1 = np.array([80, 0, 100])
+point2 = np.array([100, 20, 100])
+point3 = np.array([100, 0, 80])
+# 正六边形
+# point1 = np.array([100, 50, 100])
+# point2 = np.array([50, 100, 100])
+# point3 = np.array([100, 0, 50])
 
 # Calculate the normal vector to the plane
 normal_vector = np.cross(point2 - point1, point3 - point1)
@@ -75,10 +79,15 @@ num_vertices = len(set(tuple(point) for point in intersections))
 print("Number of Edges:", num_edges)
 print("Number of Vertices:", num_vertices)
 
+
 # Create 3D plot
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+
+# Add text to the chart
+ax.text(-50, 0, 120, f'Number of vertices: {num_vertices}', color='black')
+ax.text(-50, 0, 110, f'Number of edges: {num_edges}', color='black')
 
 # Plot cube
 for edge in edges:
