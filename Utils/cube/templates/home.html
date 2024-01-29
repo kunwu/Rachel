@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Points Plotter</title>
+</head>
+<body>
+    <form method="POST">
+        Point 1: 
+        X: <input type="text" name="point1_x" value="{{ point1[0] }}">
+        Y: <input type="text" name="point1_y" value="{{ point1[1] }}">
+        Z: <input type="text" name="point1_z" value="{{ point1[2] }}"><br>
+        Point 2: 
+        X: <input type="text" name="point2_x" value="{{ point2[0] }}">
+        Y: <input type="text" name="point2_y" value="{{ point2[1] }}">
+        Z: <input type="text" name="point2_z" value="{{ point2[2] }}"><br>
+        Point 3: 
+        X: <input type="text" name="point3_x" value="{{ point3[0] }}">
+        Y: <input type="text" name="point3_y" value="{{ point3[1] }}">
+        Z: <input type="text" name="point3_z" value="{{ point3[2] }}"><br>
+        <input type="submit" value="Plot">
+    </form>
+    {% if png_image %}
+        <img src="{{ png_image }}">
+    {% endif %}
+</body>
+</html>
