@@ -88,17 +88,20 @@ def plot_cube(point1, point2, point3):
     print("Number of Vertices:", num_vertices)
 
     # Create 3D plot
-    fig = plt.figure(figsize=(12, 9))
+    fig, axs = plt.subplots(2, 1, gridspec_kw={'height_ratios': [1, 20]}, figsize=(12, 9))
+    ax_2d, ax_cube = axs
     plt.title('3D Cube with a Plane Slice')
-    ax = fig.add_subplot(111, projection='3d')
+    ax_cube = plt.subplot(212, projection='3d')
+    ax_2d.axis('off')
+    ax_2d.text(0.5, 0.5, f"Number of vertices:{num_vertices}\nNumber of edges:{num_edges}", ha='center', va='center', fontsize=12)
 
     # Add text to the chart
-    ax.text(0, 0, 120, f'Number of vertices: {num_vertices}', color='black')
-    ax.text(0, 0, 110, f'Number of edges: {num_edges}', color='black')
+    # ax_cube.text(0, 0, 120, f'Number of vertices: {num_vertices}', color='black')
+    # ax_cube.text(0, 0, 110, f'Number of edges: {num_edges}', color='black')
 
     # Plot cube
     for edge in edges:
-        ax.plot3D(*zip(vertices[edge[0]], vertices[edge[1]]), color='k')
+        ax_cube.plot3D(*zip(vertices[edge[0]], vertices[edge[1]]), color='k')
 
     # Generate a mesh grid
     # x_range = np.linspace(min(intersections[:, 0]), max(intersections[:, 0]), 10)
@@ -112,32 +115,32 @@ def plot_cube(point1, point2, point3):
     # Plot cut face
     face = Poly3DCollection([intersections], alpha=0.2, linewidths=1, edgecolors='k')
     face.set_facecolor('lightblue')
-    ax.add_collection3d(face)
+    ax_cube.add_collection3d(face)
 
-    ax.text(point1[0], point1[1], point1[2], 'p1', color='red')
-    ax.text(point2[0], point2[1], point2[2], 'p2', color='green')
-    ax.text(point3[0], point3[1], point3[2], 'p3', color='blue')
+    ax_cube.text(point1[0], point1[1], point1[2], 'p1', color='red')
+    ax_cube.text(point2[0], point2[1], point2[2], 'p2', color='green')
+    ax_cube.text(point3[0], point3[1], point3[2], 'p3', color='blue')
 
     # Set plot limits and labels
-    ax.set_xlim([0, 1 * 100])
-    ax.set_ylim([0, 1 * 100])
-    ax.set_zlim([0, 1 * 100])
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+    ax_cube.set_xlim([0, 1 * 100])
+    ax_cube.set_ylim([0, 1 * 100])
+    ax_cube.set_zlim([0, 1 * 100])
+    ax_cube.set_xlabel('X')
+    ax_cube.set_ylabel('Y')
+    ax_cube.set_zlabel('Z')
 
     # Emphasize the origin point
-    ax.scatter3D(0, 0, 0, color='#991100', s=50)
+    ax_cube.scatter3D(0, 0, 0, color='#991100', s=50)
 
     # Add arrows to each axis
     arrow_length = 18  # Decrease this to make the arrow head appear smaller
     arrow_linewidth = 1.5  # Increase this to make the arrow head appear smaller
-    ax.quiver(0, 0, 0, arrow_length, 0, 0, color='#991100', linewidth=arrow_linewidth)
-    ax.quiver(0, 0, 0, 0, arrow_length, 0, color='#991100', linewidth=arrow_linewidth)
-    ax.quiver(0, 0, 0, 0, 0, arrow_length, color='#991100', linewidth=arrow_linewidth)
-    ax.text(18, 0, 0, 'X', color='#991100', fontweight='bold')
-    ax.text(0, 18, 0, 'Y', color='#991100', fontweight='bold')
-    ax.text(0, 0, 18, 'Z', color='#991100', fontweight='bold')
+    ax_cube.quiver(0, 0, 0, arrow_length, 0, 0, color='#991100', linewidth=arrow_linewidth)
+    ax_cube.quiver(0, 0, 0, 0, arrow_length, 0, color='#991100', linewidth=arrow_linewidth)
+    ax_cube.quiver(0, 0, 0, 0, 0, arrow_length, color='#991100', linewidth=arrow_linewidth)
+    ax_cube.text(18, 0, 0, 'X', color='#991100', fontweight='bold')
+    ax_cube.text(0, 18, 0, 'Y', color='#991100', fontweight='bold')
+    ax_cube.text(0, 0, 18, 'Z', color='#991100', fontweight='bold')
 
 def run_web():
     matplotlib.use('Agg')
@@ -182,5 +185,5 @@ def run_not_web():
     plot_cube(point1, point2, point3)
     plt.show()
 
-run_not_web()
-# run_web()
+# run_not_web()
+run_web()
