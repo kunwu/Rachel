@@ -88,12 +88,13 @@ def plot_cube(point1, point2, point3):
     print("Number of Vertices:", num_vertices)
 
     # Create 3D plot
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12, 9))
+    plt.title('3D Cube with a Plane Slice')
     ax = fig.add_subplot(111, projection='3d')
 
     # Add text to the chart
-    ax.text(-50, 0, 120, f'Number of vertices: {num_vertices}', color='black')
-    ax.text(-50, 0, 110, f'Number of edges: {num_edges}', color='black')
+    ax.text(0, 0, 120, f'Number of vertices: {num_vertices}', color='black')
+    ax.text(0, 0, 110, f'Number of edges: {num_edges}', color='black')
 
     # Plot cube
     for edge in edges:
