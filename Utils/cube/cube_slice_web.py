@@ -71,9 +71,9 @@ def home():
             if (a * v1[0] + b * v1[1] + c * v1[2] + d) * (a * v2[0] + b * v2[1] + c * v2[2] + d) <= 0:
                 t = (a * v1[0] + b * v1[1] + c * v1[2] + d) / ((a * v1[0] + b * v1[1] + c * v1[2] + d) - (a * v2[0] + b * v2[1] + c * v2[2] + d))
                 intersection = v1 + t * (v2 - v1)
-            # Append intersection to intersections only if it does not already exist in the list
-            if not any(np.allclose(i, intersection) for i in intersections):
-                intersections.append(intersection)
+                # Append intersection to intersections only if it does not already exist in the list
+                if not any(np.allclose(i, intersection) for i in intersections):
+                    intersections.append(intersection)
         # Convert intersections list to NumPy array
         intersections = np.array(intersections)
 
